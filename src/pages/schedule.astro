@@ -1,0 +1,760 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const modules = import.meta.glob('/public/images/schedule/*.webp', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+
+const schedules = Object.entries(modules)
+  .map(([path, url]) => {
+    const filename = path.split('/').pop() ?? '';
+
+    const match = filename.match(
+      /^schedule_(\d{4})(\d{2})(\d{2})\.webp$/
+    );
+
+    if (!match) return null;
+
+    const [, year, month, day] = match;
+
+    return {
+      filename,
+      url,
+      year: Number(year),
+      month: Number(month),
+      day: Number(day),
+      dateValue: Number(`${year}${month}${day}`),
+      dateLabel: `${year}-${month}-${day}`,
+    };
+  })
+  .filter((item) => item !== null)
+  .sort((a, b) => b.dateValue - a.dateValue);
+
+
+// 年ごとに分類
+const grouped = schedules.reduce((acc, schedule) => {
+  const year = schedule.year;
+
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+
+  acc[year].push(schedule);
+
+  return acc;
+}, {});
+
+
+// 年を新しい順に並べる
+const years = Object.keys(grouped)
+  .map(Number)
+  .sort((a, b) => b - a);
+
+
+// 一番新しい年
+const latestYear = years[0];
+---
+
+<BaseLayout title="Schedule | Mokomo Games">
+
+  <h1>Schedule</h1>
+
+  <div class="year-list">
+
+    {years.map((year) => (
+
+      <details open={year === latestYear}>
+
+        <summary>
+          {year}
+        </summary>
+
+        <div class="schedule-grid">
+
+          {grouped[year].map((schedule) => (
+
+            <article class="schedule-item">
+
+              <img
+                src={year === latestYear ? schedule.url : undefined}
+                data-src={year === latestYear ? undefined : schedule.url}
+                data-full={schedule.url}
+                alt={`${schedule.dateLabel} の配信スケジュール`}
+                loading="lazy"
+                tabindex="0"
+              />
+
+            </article>
+
+          ))}
+
+        </div>
+
+      </details>
+
+    ))}
+
+  </div>
+
+
+  <!-- 拡大表示用ライトボックス -->
+
+  <div
+    id="lightbox"
+    class="lightbox"
+    aria-hidden="true"
+  >
+
+    <button
+      class="lightbox-close"
+      type="button"
+      aria-label="閉じる"
+    >
+      ×
+    </button>
+
+    <button
+      class="lightbox-prev"
+      type="button"
+      aria-label="前の画像"
+    >
+      ‹
+    </button>
+
+    <img
+      class="lightbox-image"
+      src=""
+      alt=""
+    />
+
+    <button
+      class="lightbox-next"
+      type="button"
+      aria-label="次の画像"
+    >
+      ›
+    </button>
+
+  </div>
+
+
+  <script>
+
+    /*
+     * 過去年の画像は、
+     * 年を開いたときに初めて読み込む
+     */
+
+    document.querySelectorAll('details').forEach((details) => {
+
+      details.addEventListener('toggle', () => {
+
+        if (!details.open) return;
+
+        details.querySelectorAll('img[data-src]').forEach((img) => {
+
+          const src = img.getAttribute('data-src');
+
+          if (src) {
+            img.setAttribute('src', src);
+            img.removeAttribute('data-src');
+          }
+
+        });
+
+      });
+
+    });
+
+
+    /*
+     * ライトボックス
+     */
+
+    const scheduleImages =
+      Array.from(
+        document.querySelectorAll('.schedule-item img')
+      );
+
+    const lightbox =
+      document.querySelector('#lightbox');
+
+    const lightboxImage =
+      document.querySelector('.lightbox-image');
+
+    const closeButton =
+      document.querySelector('.lightbox-close');
+
+    const prevButton =
+      document.querySelector('.lightbox-prev');
+
+    const nextButton =
+      document.querySelector('.lightbox-next');
+
+    let currentIndex = 0;
+
+
+    /*
+     * 指定した画像を拡大表示
+     */
+
+    function showImage(index) {
+
+      if (!lightbox || !lightboxImage) return;
+
+      if (index < 0) {
+        index = scheduleImages.length - 1;
+      }
+
+      if (index >= scheduleImages.length) {
+        index = 0;
+      }
+
+      currentIndex = index;
+
+      const image = scheduleImages[currentIndex];
+
+      const fullSrc =
+        image.getAttribute('data-full');
+
+      if (!fullSrc) return;
+
+      lightboxImage.setAttribute('src', fullSrc);
+
+      lightboxImage.setAttribute(
+        'alt',
+        image.getAttribute('alt') ?? ''
+      );
+
+      lightbox.classList.add('is-open');
+
+      lightbox.setAttribute(
+        'aria-hidden',
+        'false'
+      );
+
+      document.body.classList.add(
+        'lightbox-open'
+      );
+
+    }
+
+
+    /*
+     * ライトボックスを閉じる
+     */
+
+    function closeLightbox() {
+
+      if (!lightbox || !lightboxImage) return;
+
+      lightbox.classList.remove('is-open');
+
+      lightbox.setAttribute(
+        'aria-hidden',
+        'true'
+      );
+
+      lightboxImage.setAttribute('src', '');
+
+      document.body.classList.remove(
+        'lightbox-open'
+      );
+
+    }
+
+
+    /*
+     * 前の画像
+     */
+
+    function showPrevious() {
+      showImage(currentIndex - 1);
+    }
+
+
+    /*
+     * 次の画像
+     */
+
+    function showNext() {
+      showImage(currentIndex + 1);
+    }
+
+
+    /*
+     * 通常画像をクリック
+     */
+
+    scheduleImages.forEach((image, index) => {
+
+      image.addEventListener('click', () => {
+        showImage(index);
+      });
+
+
+      /*
+       * Enterキーでも開ける
+       */
+
+      image.addEventListener(
+        'keydown',
+        (event) => {
+
+          if (
+            event.key === 'Enter' ||
+            event.key === ' '
+          ) {
+            event.preventDefault();
+            showImage(index);
+          }
+
+        }
+      );
+
+    });
+
+
+    /*
+     * ボタン
+     */
+
+    closeButton?.addEventListener(
+      'click',
+      closeLightbox
+    );
+
+    prevButton?.addEventListener(
+      'click',
+      showPrevious
+    );
+
+    nextButton?.addEventListener(
+      'click',
+      showNext
+    );
+
+
+    /*
+     * 背景をクリックした場合も閉じる
+     */
+
+    lightbox?.addEventListener(
+      'click',
+      (event) => {
+
+        if (event.target === lightbox) {
+          closeLightbox();
+        }
+
+      }
+    );
+
+
+    /*
+     * キーボード操作
+     *
+     * ← 前
+     * → 次
+     * Esc 閉じる
+     */
+
+    document.addEventListener(
+      'keydown',
+      (event) => {
+
+        if (
+          !lightbox?.classList.contains(
+            'is-open'
+          )
+        ) {
+          return;
+        }
+
+        if (event.key === 'Escape') {
+          closeLightbox();
+        }
+
+        if (event.key === 'ArrowLeft') {
+          showPrevious();
+        }
+
+        if (event.key === 'ArrowRight') {
+          showNext();
+        }
+
+      }
+    );
+
+  </script>
+
+</BaseLayout>
+
+
+<style>
+
+  /*
+   * 年ごとの一覧
+   */
+
+  .year-list {
+    display: grid;
+    gap: 1rem;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+  }
+
+
+  /*
+   * 年ごとのボックス
+   */
+
+  details {
+    border: 1px solid #ddd;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background: #fff;
+  }
+
+
+  /*
+   * 2026、2025... の部分
+   */
+
+  summary {
+    cursor: pointer;
+
+    list-style: none;
+
+    font-size: 1.4rem;
+
+    font-weight: 700;
+
+    padding: 1rem 1.25rem;
+
+    background: #f6f6f6;
+
+    user-select: none;
+  }
+
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+
+  /*
+   * ▶ マーク
+   */
+
+  summary::before {
+    content: "▶";
+
+    display: inline-block;
+
+    margin-right: 0.7rem;
+
+    font-size: 0.85rem;
+
+    transition: transform 0.2s ease;
+  }
+
+
+  /*
+   * 開いたときに回転
+   */
+
+  details[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+
+  details[open] summary {
+    border-bottom: 1px solid #ddd;
+  }
+
+
+  /*
+   * スケジュール画像一覧
+   */
+
+  .schedule-grid {
+    display: grid;
+
+    grid-template-columns:
+      repeat(auto-fit, minmax(300px, 1fr));
+
+    gap: 1.5rem;
+
+    padding: 1.5rem;
+  }
+
+
+  .schedule-item {
+    width: 100%;
+  }
+
+
+  /*
+   * 通常の画像
+   */
+
+  .schedule-item img {
+    display: block;
+
+    width: 100%;
+
+    height: auto;
+
+    border-radius: 10px;
+
+    cursor: zoom-in;
+
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+
+  /*
+   * マウスを乗せたとき
+   */
+
+  .schedule-item img:hover {
+    transform: scale(1.015);
+
+    opacity: 0.9;
+  }
+
+
+  /*
+   * ライトボックス全体
+   */
+
+  .lightbox {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+      rgba(0, 0, 0, 0.88);
+
+    padding: 3rem 5rem;
+  }
+
+
+  /*
+   * 開いている状態
+   */
+
+  .lightbox.is-open {
+    display: flex;
+  }
+
+
+  /*
+   * 拡大画像
+   */
+
+  .lightbox-image {
+    display: block;
+
+    max-width: 90vw;
+
+    max-height: 90vh;
+
+    width: auto;
+
+    height: auto;
+
+    object-fit: contain;
+  }
+
+
+  /*
+   * 共通ボタン
+   */
+
+  .lightbox button {
+    position: fixed;
+
+    z-index: 1001;
+
+    border: 0;
+
+    background: transparent;
+
+    color: white;
+
+    cursor: pointer;
+
+    line-height: 1;
+
+    opacity: 0.8;
+
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+
+  .lightbox button:hover {
+    opacity: 1;
+  }
+
+
+  /*
+   * ×
+   */
+
+  .lightbox-close {
+    top: 1rem;
+
+    right: 1.5rem;
+
+    font-size: 3rem;
+  }
+
+  .lightbox-close:hover {
+  transform: scale(1.1);
+  }
+
+
+  /*
+   * 左矢印
+   */
+
+  .lightbox-prev {
+    left: 1rem;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 5rem;
+  }
+
+
+  .lightbox-prev:hover {
+    transform:
+      translateY(-50%)
+      scale(1.1);
+  }
+
+
+  /*
+   * 右矢印
+   */
+
+  .lightbox-next {
+    right: 1rem;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 5rem;
+  }
+
+
+  .lightbox-next:hover {
+    transform:
+      translateY(-50%)
+      scale(1.1);
+  }
+
+
+  /*
+   * ライトボックス表示中は
+   * 背景ページをスクロールさせない
+   */
+
+  :global(body.lightbox-open) {
+    overflow: hidden;
+  }
+
+
+  /*
+   * スマートフォン
+   */
+
+  @media (max-width: 700px) {
+
+    .year-list {
+      gap: 0.8rem;
+    }
+
+
+    summary {
+      font-size: 1.2rem;
+
+      padding: 0.9rem 1rem;
+    }
+
+
+    .schedule-grid {
+      grid-template-columns: 1fr;
+
+      gap: 1rem;
+
+      padding: 1rem;
+    }
+
+
+    .schedule-item img {
+      border-radius: 8px;
+    }
+
+
+    .lightbox {
+      padding: 3rem 2.5rem;
+    }
+
+
+    .lightbox-image {
+      max-width: 94vw;
+
+      max-height: 88vh;
+    }
+
+
+    .lightbox-close {
+      top: 0.75rem;
+
+      right: 1rem;
+
+      font-size: 2.5rem;
+    }
+
+
+    .lightbox-prev {
+      left: 0.25rem;
+
+      font-size: 3.5rem;
+    }
+
+
+    .lightbox-next {
+      right: 0.25rem;
+
+      font-size: 3.5rem;
+    }
+
+  }
+
+</style>
