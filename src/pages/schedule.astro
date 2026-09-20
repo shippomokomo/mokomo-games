@@ -392,68 +392,67 @@ const latestYear = years[0];
 
 </BaseLayout>
 
-
 <style>
-
   /*
    * 年ごとの一覧
    */
-
   .year-list {
     display: grid;
     gap: 1rem;
 
     max-width: 1400px;
-
     margin: 0 auto;
   }
 
-
   /*
-   * 年ごとのボックス
+   * 年ごとのまとまり
+   *
+   * 白いカードや外枠は付けず、
+   * ページ背景に直接配置
    */
-
   details {
-    border: 1px solid #ddd;
-
-    border-radius: 12px;
-
-    overflow: hidden;
-
-    background: #fff;
+    background: transparent;
   }
-
 
   /*
    * 2026、2025... の部分
+   *
+   * 開いていても閉じていても
+   * 同じデザインにする
    */
-
   summary {
     cursor: pointer;
 
     list-style: none;
 
-    font-size: 1.4rem;
+    padding: 1rem 0;
 
+    border-bottom:
+      1px solid var(--color-border);
+
+    background: transparent;
+    color: var(--color-green-dark);
+
+    font-size: 1.4rem;
     font-weight: 700;
 
-    padding: 1rem 1.25rem;
-
-    background: #f6f6f6;
-
     user-select: none;
+
+    transition:
+      color 0.15s ease;
   }
 
+  summary:hover {
+    color: var(--color-green);
+  }
 
   summary::-webkit-details-marker {
     display: none;
   }
 
-
   /*
    * ▶ マーク
    */
-
   summary::before {
     content: "▶";
 
@@ -461,30 +460,27 @@ const latestYear = years[0];
 
     margin-right: 0.7rem;
 
+    color: var(--color-green);
+
     font-size: 0.85rem;
 
-    transition: transform 0.2s ease;
+    transition:
+      transform 0.2s ease;
   }
-
 
   /*
    * 開いたときに回転
    */
-
   details[open] summary::before {
     transform: rotate(90deg);
   }
 
-
-  details[open] summary {
-    border-bottom: 1px solid #ddd;
-  }
-
-
   /*
    * スケジュール画像一覧
+   *
+   * 白い外枠を使わず、
+   * ページ背景へ直接並べる
    */
-
   .schedule-grid {
     display: grid;
 
@@ -493,24 +489,22 @@ const latestYear = years[0];
 
     gap: 1.5rem;
 
-    padding: 1.5rem;
+    padding: 1.5rem 0 0;
   }
-
 
   .schedule-item {
     width: 100%;
   }
 
-
   /*
    * 通常の画像
+   *
+   * 他ページと同じく枠線なし
    */
-
   .schedule-item img {
     display: block;
 
     width: 100%;
-
     height: auto;
 
     border-radius: 10px;
@@ -522,22 +516,18 @@ const latestYear = years[0];
       opacity 0.15s ease;
   }
 
-
   /*
    * マウスを乗せたとき
    */
-
   .schedule-item img:hover {
-    transform: scale(1.015);
+    transform: scale(1.01);
 
-    opacity: 0.9;
+    opacity: 0.96;
   }
-
 
   /*
    * ライトボックス全体
    */
-
   .lightbox {
     position: fixed;
 
@@ -548,7 +538,6 @@ const latestYear = years[0];
     display: none;
 
     align-items: center;
-
     justify-content: center;
 
     background:
@@ -557,39 +546,31 @@ const latestYear = years[0];
     padding: 3rem 5rem;
   }
 
-
   /*
    * 開いている状態
    */
-
   .lightbox.is-open {
     display: flex;
   }
 
-
   /*
    * 拡大画像
    */
-
   .lightbox-image {
     display: block;
 
     max-width: 90vw;
-
     max-height: 90vh;
 
     width: auto;
-
     height: auto;
 
     object-fit: contain;
   }
 
-
   /*
    * 共通ボタン
    */
-
   .lightbox button {
     position: fixed;
 
@@ -598,7 +579,6 @@ const latestYear = years[0];
     border: 0;
 
     background: transparent;
-
     color: white;
 
     cursor: pointer;
@@ -612,43 +592,35 @@ const latestYear = years[0];
       transform 0.15s ease;
   }
 
-
   .lightbox button:hover {
     opacity: 1;
   }
 
-
   /*
    * ×
    */
-
   .lightbox-close {
     top: 1rem;
-
     right: 1.5rem;
 
     font-size: 3rem;
   }
 
   .lightbox-close:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
   }
-
 
   /*
    * 左矢印
    */
-
   .lightbox-prev {
     left: 1rem;
-
     top: 50%;
 
     transform: translateY(-50%);
 
     font-size: 5rem;
   }
-
 
   .lightbox-prev:hover {
     transform:
@@ -656,21 +628,18 @@ const latestYear = years[0];
       scale(1.1);
   }
 
-
   /*
    * 右矢印
    */
-
   .lightbox-next {
     right: 1rem;
-
     top: 50%;
 
-    transform: translateY(-50%);
+    transform:
+      translateY(-50%);
 
     font-size: 5rem;
   }
-
 
   .lightbox-next:hover {
     transform:
@@ -678,69 +647,58 @@ const latestYear = years[0];
       scale(1.1);
   }
 
-
   /*
    * ライトボックス表示中は
    * 背景ページをスクロールさせない
    */
-
   :global(body.lightbox-open) {
     overflow: hidden;
   }
 
-
   /*
    * スマートフォン
    */
-
   @media (max-width: 700px) {
-
     .year-list {
       gap: 0.8rem;
     }
 
-
     summary {
+      padding: 0.9rem 0;
+
       font-size: 1.2rem;
-
-      padding: 0.9rem 1rem;
     }
-
 
     .schedule-grid {
       grid-template-columns: 1fr;
 
       gap: 1rem;
 
-      padding: 1rem;
+      padding: 1rem 0 0;
     }
-
 
     .schedule-item img {
       border-radius: 8px;
     }
 
-
+    /*
+     * スマホのライトボックス
+     */
     .lightbox {
       padding: 3rem 2.5rem;
     }
 
-
     .lightbox-image {
       max-width: 94vw;
-
       max-height: 88vh;
     }
 
-
     .lightbox-close {
       top: 0.75rem;
-
       right: 1rem;
 
       font-size: 2.5rem;
     }
-
 
     .lightbox-prev {
       left: 0.25rem;
@@ -748,13 +706,10 @@ const latestYear = years[0];
       font-size: 3.5rem;
     }
 
-
     .lightbox-next {
       right: 0.25rem;
 
       font-size: 3.5rem;
     }
-
   }
-
 </style>

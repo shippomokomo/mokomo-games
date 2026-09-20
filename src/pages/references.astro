@@ -47,14 +47,16 @@ const references = {
       <h2>Key Art</h2>
 
       <div class="large-reference key-art">
-        <img
-          class="reference-image"
-          src={references.keyArt.src}
-          data-full={references.keyArt.src}
-          alt={references.keyArt.alt}
-          loading="lazy"
-          tabindex="0"
-        />
+        <div class="image-frame">
+          <img
+            class="reference-image"
+            src={references.keyArt.src}
+            data-full={references.keyArt.src}
+            alt={references.keyArt.alt}
+            loading="lazy"
+            tabindex="0"
+          />
+        </div>
 
         <div class="artist-info">
           <a
@@ -75,14 +77,16 @@ const references = {
         <h3>September 2025 to Current</h3>
 
         <div class="large-reference">
-          <img
-            class="reference-image"
-            src={references.current.src}
-            data-full={references.current.src}
-            alt={references.current.alt}
-            loading="lazy"
-            tabindex="0"
-          />
+          <div class="image-frame">
+            <img
+              class="reference-image"
+              src={references.current.src}
+              data-full={references.current.src}
+              alt={references.current.alt}
+              loading="lazy"
+              tabindex="0"
+            />
+          </div>
 
           <div class="artist-info">
             <a
@@ -103,14 +107,16 @@ const references = {
           <div class="past-reference">
             <h3>{reference.period}</h3>
 
-            <img
-              class="reference-image"
-              src={reference.src}
-              data-full={reference.src}
-              alt={reference.alt}
-              loading="lazy"
-              tabindex="0"
-            />
+            <div class="image-frame">
+              <img
+                class="reference-image"
+                src={reference.src}
+                data-full={reference.src}
+                alt={reference.alt}
+                loading="lazy"
+                tabindex="0"
+              />
+            </div>
 
             <div class="artist-info">
               <a
@@ -220,17 +226,27 @@ const references = {
       if (!fullSrc) return;
 
       lightboxImage.setAttribute('src', fullSrc);
+
       lightboxImage.setAttribute(
         'alt',
         image.getAttribute('alt') ?? ''
       );
 
       lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('lightbox-open');
+
+      lightbox.setAttribute(
+        'aria-hidden',
+        'false'
+      );
+
+      document.body.classList.add(
+        'lightbox-open'
+      );
     }
 
-    function openImage(image: HTMLImageElement) {
+    function openImage(
+      image: HTMLImageElement
+    ) {
       const index = images.indexOf(image);
 
       if (index === -1) return;
@@ -242,12 +258,18 @@ const references = {
       if (!lightbox || !lightboxImage) return;
 
       lightbox.classList.remove('is-open');
-      lightbox.setAttribute('aria-hidden', 'true');
+
+      lightbox.setAttribute(
+        'aria-hidden',
+        'true'
+      );
 
       lightboxImage.setAttribute('src', '');
       lightboxImage.setAttribute('alt', '');
 
-      document.body.classList.remove('lightbox-open');
+      document.body.classList.remove(
+        'lightbox-open'
+      );
     }
 
     function showPrevious() {
@@ -263,15 +285,18 @@ const references = {
         openImage(image);
       });
 
-      image.addEventListener('keydown', (event) => {
-        if (
-          event.key === 'Enter' ||
-          event.key === ' '
-        ) {
-          event.preventDefault();
-          openImage(image);
+      image.addEventListener(
+        'keydown',
+        (event) => {
+          if (
+            event.key === 'Enter' ||
+            event.key === ' '
+          ) {
+            event.preventDefault();
+            openImage(image);
+          }
         }
-      });
+      );
     });
 
     closeButton?.addEventListener(
@@ -289,103 +314,190 @@ const references = {
       showNext
     );
 
-    lightbox?.addEventListener('click', (event) => {
-      if (event.target === lightbox) {
-        closeLightbox();
+    lightbox?.addEventListener(
+      'click',
+      (event) => {
+        if (event.target === lightbox) {
+          closeLightbox();
+        }
       }
-    });
+    );
 
-    document.addEventListener('keydown', (event) => {
-      if (!lightbox?.classList.contains('is-open')) {
-        return;
-      }
+    document.addEventListener(
+      'keydown',
+      (event) => {
+        if (
+          !lightbox?.classList.contains(
+            'is-open'
+          )
+        ) {
+          return;
+        }
 
-      if (event.key === 'Escape') {
-        closeLightbox();
-      }
+        if (event.key === 'Escape') {
+          closeLightbox();
+        }
 
-      if (event.key === 'ArrowLeft') {
-        showPrevious();
-      }
+        if (event.key === 'ArrowLeft') {
+          showPrevious();
+        }
 
-      if (event.key === 'ArrowRight') {
-        showNext();
+        if (event.key === 'ArrowRight') {
+          showNext();
+        }
       }
-    });
+    );
   </script>
 </BaseLayout>
 
 <style>
+  /*
+   * References全体
+   */
   .references-page {
     max-width: 1400px;
     margin: 0 auto;
   }
 
+  /*
+   * ページ冒頭
+   */
   .intro {
-    margin-bottom: 3rem;
+    margin-bottom: 3.5rem;
   }
 
   .intro p {
-    line-height: 1.8;
+    margin: 0;
+
+    color: var(--color-text-soft);
+
+    line-height: 1.9;
   }
 
+  /*
+   * 各セクション
+   */
   .reference-section {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
   }
 
   .reference-section h2 {
-    margin-bottom: 1.5rem;
+    margin: 0 0 1.75rem;
+
+    color: var(--color-text);
+
+    font-size: 2rem;
   }
 
   .reference-section h3 {
     margin-top: 0;
     margin-bottom: 1rem;
+
+    color: var(--color-green-dark);
+
     font-size: 1.1rem;
+    font-weight: 700;
   }
 
+  /*
+   * 大きなReference
+   */
   .large-reference {
     max-width: 1100px;
     margin: 0 auto;
   }
 
+  /*
+   * 画像の白いフレーム
+   *
+   * 暖色背景の上で画像を
+   * 少しだけ浮かせる
+   */
+  .image-frame {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+
+    border-radius: 12px;
+
+    background: #fff;
+
+    overflow: hidden;
+  }
+
+  /*
+   * 画像
+   */
   .reference-image {
     display: block;
+
     width: 100%;
     height: auto;
-    border-radius: 10px;
+
     cursor: zoom-in;
+
     transition:
       transform 0.15s ease,
       opacity 0.15s ease;
   }
 
+  .reference-image:hover {
+    transform: scale(1.005);
+    opacity: 0.96;
+  }
+
   /*
-   * Key ArtだけPCでは画面の高さに合わせて
-   * 少し小さく表示する
+   * Key ArtだけPCでは
+   * 画面の高さに合わせて小さく表示
    */
   .key-art .reference-image {
     width: auto;
     max-width: 100%;
     max-height: 70vh;
     margin: 0 auto;
+
     object-fit: contain;
   }
 
-  .reference-image:hover {
-    transform: scale(1.01);
-    opacity: 0.9;
-  }
-
+  /*
+   * 作者
+   */
   .artist-info {
     display: flex;
     justify-content: center;
-    margin-top: 0.75rem;
+
+    margin-top: 0.85rem;
   }
 
   .artist-info a {
-    color: inherit;
+    color: var(--color-green-dark);
+
+    font-weight: 600;
+
+    text-decoration-color:
+      color-mix(
+        in srgb,
+        var(--color-green) 60%,
+        transparent
+      );
+
+    text-underline-offset: 0.2em;
+
+    transition:
+      color 0.15s ease,
+      text-decoration-color 0.15s ease;
   }
 
+  .artist-info a:hover {
+    color: var(--color-green);
+
+    text-decoration-color:
+      var(--color-green);
+  }
+
+  /*
+   * 現在のReference Sheet
+   */
   .current-reference {
     margin-bottom: 3rem;
   }
@@ -394,16 +506,27 @@ const references = {
     text-align: center;
   }
 
+  /*
+   * 新旧Reference Sheetの区切り
+   */
   .reference-divider {
     margin: 3.5rem 0;
+
     border: 0;
-    border-top: 1px solid #ccc;
+    border-top:
+      1px solid var(--color-border);
   }
 
+  /*
+   * 過去のReference Sheet
+   */
   .past-reference-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
     gap: 2rem;
+
     align-items: start;
   }
 
@@ -411,14 +534,24 @@ const references = {
     text-align: center;
   }
 
+  /*
+   * Lightbox
+   */
   .lightbox {
     position: fixed;
+
     inset: 0;
+
     z-index: 1000;
+
     display: none;
+
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.88);
+
+    background:
+      rgba(0, 0, 0, 0.88);
+
     padding: 3rem 5rem;
   }
 
@@ -428,22 +561,37 @@ const references = {
 
   .lightbox-image {
     display: block;
+
     max-width: 90vw;
     max-height: 90vh;
+
     width: auto;
     height: auto;
+
     object-fit: contain;
   }
 
+  /*
+   * Lightboxボタン
+   *
+   * Home / Scheduleと同じ
+   */
   .lightbox button {
     position: fixed;
+
     z-index: 1001;
+
     border: 0;
+
     background: transparent;
     color: white;
+
     cursor: pointer;
+
     line-height: 1;
+
     opacity: 0.8;
+
     transition:
       opacity 0.15s ease,
       transform 0.15s ease;
@@ -456,6 +604,7 @@ const references = {
   .lightbox-close {
     top: 1rem;
     right: 1.5rem;
+
     font-size: 3rem;
   }
 
@@ -466,36 +615,51 @@ const references = {
   .lightbox-prev {
     left: 1rem;
     top: 50%;
+
     transform: translateY(-50%);
+
     font-size: 5rem;
   }
 
   .lightbox-prev:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform:
+      translateY(-50%)
+      scale(1.1);
   }
 
   .lightbox-next {
     right: 1rem;
     top: 50%;
+
     transform: translateY(-50%);
+
     font-size: 5rem;
   }
 
   .lightbox-next:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform:
+      translateY(-50%)
+      scale(1.1);
   }
 
   :global(body.lightbox-open) {
     overflow: hidden;
   }
 
+  /*
+   * スマートフォン
+   */
   @media (max-width: 700px) {
     .intro {
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
     }
 
     .reference-section {
-      margin-bottom: 3rem;
+      margin-bottom: 4rem;
+    }
+
+    .reference-section h2 {
+      font-size: 1.7rem;
     }
 
     .large-reference {
@@ -503,7 +667,7 @@ const references = {
     }
 
     /*
-     * スマホでは通常どおり
+     * スマホではKey Artも
      * 横幅いっぱいを使う
      */
     .key-art .reference-image {
@@ -514,6 +678,7 @@ const references = {
 
     .past-reference-grid {
       grid-template-columns: 1fr;
+
       gap: 2.5rem;
     }
 
@@ -521,8 +686,8 @@ const references = {
       margin: 2.5rem 0;
     }
 
-    .reference-image {
-      border-radius: 8px;
+    .image-frame {
+      border-radius: 10px;
     }
 
     .lightbox {
@@ -537,16 +702,19 @@ const references = {
     .lightbox-close {
       top: 0.75rem;
       right: 1rem;
+
       font-size: 2.5rem;
     }
 
     .lightbox-prev {
       left: 0.25rem;
+
       font-size: 3.5rem;
     }
 
     .lightbox-next {
       right: 0.25rem;
+
       font-size: 3.5rem;
     }
   }

@@ -429,6 +429,26 @@ const groups = [
         </div>
       </div>
 
+      <!-- 頭文字から探す -->
+      <nav
+        class="initial-index"
+        aria-label="ゲームタイトルの頭文字から探す"
+      >
+        <span class="initial-index-label">
+          頭文字から探す
+        </span>
+
+        <div class="initial-index-links">
+          {
+            groups.map((group) => (
+              <a href={`#group-${group.name}`}>
+                {group.name}
+              </a>
+            ))
+          }
+        </div>
+      </nav>
+      
       <p
         class="search-result-count"
         aria-live="polite"
@@ -444,6 +464,7 @@ const groups = [
       <div class="archive-grid">
         {groups.map((group) => (
           <section
+            id={`group-${group.name}`}
             class="archive-group"
             data-group={group.name}
           >
@@ -630,18 +651,58 @@ const groups = [
     margin: 0 auto;
   }
 
+  /*
+   * Archiveカテゴリ
+   *
+   * Homeのリンクボタンと同じ
+   * 白地＋緑枠のデザイン
+   */
   .archive-categories {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem 1.5rem;
+    gap: 0.75rem;
+
     margin-bottom: 3rem;
   }
 
   .archive-categories a {
-    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0.65rem 1.15rem;
+
+    border: 1px solid var(--color-green);
+    border-radius: 999px;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
     font-weight: 600;
+    line-height: 1.2;
+
+    text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
   }
 
+  .archive-categories a:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
+
+    transform: translateY(-1px);
+  }
+
+  /*
+   * Games
+   */
   .games-section h2 {
     margin-bottom: 0.75rem;
   }
@@ -649,21 +710,39 @@ const groups = [
   .archive-note,
   .sponsored-note {
     margin: 0.4rem 0;
+
+    color: var(--color-text-soft);
+
     line-height: 1.7;
   }
 
+  /*
+   * ★
+   */
   .sponsored-star {
     margin-right: 0.2rem;
+
+    color: var(--color-green-dark);
+
+    font-weight: 700;
   }
 
+  /*
+   * 検索
+   */
   .search-area {
-    margin: 2rem 0 0.5rem;
     max-width: 700px;
+
+    margin: 2rem 0 0.5rem;
   }
 
   .search-area label {
     display: block;
+
     margin-bottom: 0.5rem;
+
+    color: var(--color-text);
+
     font-weight: 700;
   }
 
@@ -672,59 +751,181 @@ const groups = [
     gap: 0.75rem;
   }
 
+  /*
+   * 検索入力欄
+   */
   .game-search {
     width: 100%;
     min-width: 0;
+
     padding: 0.75rem 1rem;
-    border: 1px solid #bbb;
+
+    border: 1px solid var(--color-border);
     border-radius: 10px;
-    background: white;
+
+    background: #fff;
+    color: var(--color-text);
+
     font: inherit;
+
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .game-search:hover {
+    border-color: var(--color-green);
   }
 
   .game-search:focus {
-    outline: 2px solid #222;
-    outline-offset: 2px;
+    border-color: var(--color-green);
+
+    outline: none;
+
+    box-shadow:
+      0 0 0 3px var(--color-green-soft);
   }
 
+  /*
+   * クリアボタン
+   */
   .search-clear {
     flex: 0 0 auto;
+
     padding: 0.6rem 1rem;
-    border: 1px solid #bbb;
+
+    border: 1px solid var(--color-green);
     border-radius: 10px;
-    background: white;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
     font: inherit;
+    font-weight: 600;
+
     cursor: pointer;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
   }
 
   .search-clear:hover {
-    background: #eee;
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
   }
 
   .search-clear[hidden] {
     display: none;
   }
 
+  /*
+   * 頭文字から探す
+   */
+  .initial-index {
+    max-width: 900px;
+
+    margin: 1.5rem 0 0;
+  }
+
+  .initial-index-label {
+    display: block;
+
+    margin-bottom: 0.65rem;
+
+    color: var(--color-text);
+
+    font-weight: 700;
+  }
+
+  .initial-index-links {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.45rem;
+  }
+
+  .initial-index-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 2.4rem;
+    min-height: 2.4rem;
+
+    padding: 0.35rem 0.6rem;
+
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+
+    background: transparent;
+    color: var(--color-green-dark);
+
+    font-weight: 700;
+    line-height: 1;
+
+    text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .initial-index-links a:hover {
+    border-color: var(--color-green);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
+  }
+
+  /*
+   * 頭文字を押してジャンプしたとき、
+   * 見出しが画面上端にくっつきすぎないようにする
+   */
+  .archive-group {
+    scroll-margin-top: 2rem;
+  }
+  
+  /*
+   * 検索結果
+   */
   .search-result-count {
     min-height: 1.5em;
+
     margin: 0.5rem 0 1.5rem;
+
+    color: var(--color-green-dark);
+
     font-size: 0.9rem;
+    font-weight: 600;
   }
 
   .no-results {
     margin: 2rem 0;
+
+    color: var(--color-text-soft);
   }
 
   .no-results[hidden] {
     display: none;
   }
 
+  /*
+   * ゲーム一覧
+   */
   .archive-grid {
     display: grid;
     grid-template-columns:
       repeat(3, minmax(0, 1fr));
+
     gap: 2.5rem 3rem;
+
     align-items: start;
+
     margin-top: 1rem;
   }
 
@@ -736,22 +937,36 @@ const groups = [
     display: none;
   }
 
+  /*
+   * A / B / C / あ / か...
+   */
   .archive-group h3 {
     margin: 0 0 0.8rem;
     padding-bottom: 0.4rem;
-    border-bottom: 1px solid #ccc;
+
+    border-bottom:
+      1px solid var(--color-border);
+
+    color: var(--color-green-dark);
+
     font-size: 1.5rem;
   }
 
   .archive-group ul {
     margin: 0;
     padding: 0;
+
     list-style: none;
   }
 
+  /*
+   * ゲームタイトル
+   */
   .game-item {
     margin: 0.55rem 0;
+
     line-height: 1.5;
+
     overflow-wrap: anywhere;
   }
 
@@ -760,17 +975,37 @@ const groups = [
   }
 
   .game-item a {
-    color: inherit;
+    color: var(--color-text);
+
+    text-decoration-color:
+      var(--color-border);
+
+    text-underline-offset: 0.18em;
+
+    transition:
+      color 0.15s ease,
+      text-decoration-color 0.15s ease;
   }
 
   .game-item a:hover {
+    color: var(--color-green-dark);
+
+    text-decoration-color:
+      var(--color-green);
+
     text-decoration-thickness: 2px;
   }
 
+  /*
+   * リンクがないタイトル
+   */
   .no-link {
-    color: #777;
+    color: var(--color-text-soft);
   }
 
+  /*
+   * タブレット
+   */
   @media (max-width: 1000px) {
     .archive-grid {
       grid-template-columns:
@@ -778,10 +1013,20 @@ const groups = [
     }
   }
 
+  /*
+   * スマートフォン
+   */
   @media (max-width: 700px) {
     .archive-categories {
-      flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.6rem;
+    }
+
+    .archive-categories a {
+      min-height: 40px;
+
+      padding: 0.55rem 0.9rem;
+
+      font-size: 0.9rem;
     }
 
     .search-row {
@@ -790,6 +1035,7 @@ const groups = [
 
     .archive-grid {
       grid-template-columns: 1fr;
+
       gap: 2rem;
     }
   }

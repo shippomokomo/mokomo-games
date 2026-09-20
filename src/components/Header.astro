@@ -1,13 +1,80 @@
-<header>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/references/">References</a>
-    <a href="/illustrations/">Illustrations</a>
-    <a href="/schedule/">Schedule</a>
-    <a href="/archives/">Archives</a>
-    <a href="/works/">Works</a>
+---
+const currentPath = Astro.url.pathname;
+
+const navigation = [
+  {
+    label: 'Home',
+    href: '/',
+  },
+  {
+    label: 'References',
+    href: '/references/',
+  },
+  {
+    label: 'Illustrations',
+    href: '/illustrations/',
+  },
+  {
+    label: 'Schedule',
+    href: '/schedule/',
+  },
+  {
+    label: 'Archives',
+    href: '/archives/',
+  },
+  {
+    label: 'Works',
+    href: '/works/',
+  },
+];
+
+const contactUrl =
+  'https://docs.google.com/forms/d/e/1FAIpQLSfYv8hTEEF-RUeLCQTIECUldygrhvK21UBx7l3mQHLPyE2OyQ/viewform?usp=dialog';
+
+function isCurrentPage(href: string) {
+  if (href === '/') {
+    return currentPath === '/';
+  }
+
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="site-header">
+  <a
+    class="site-title"
+    href="/"
+    aria-label="Mokomo Games Home"
+  >
+    Mokomo Games
+  </a>
+
+  <nav
+    class="site-nav"
+    aria-label="メインナビゲーション"
+  >
+    {
+      navigation.map((item) => (
+        <a
+          href={item.href}
+          class:list={{
+            'nav-link': true,
+            'is-current': isCurrentPage(item.href),
+          }}
+          aria-current={
+            isCurrentPage(item.href)
+              ? 'page'
+              : undefined
+          }
+        >
+          {item.label}
+        </a>
+      ))
+    }
+
     <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLSfYv8hTEEF-RUeLCQTIECUldygrhvK21UBx7l3mQHLPyE2OyQ/viewform?usp=dialog"
+      class="nav-link contact-link"
+      href={contactUrl}
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -17,18 +84,187 @@
 </header>
 
 <style>
-  nav {
+  /*
+   * Header全体
+   */
+  .site-header {
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+
+    min-height: 80px;
+
+    border-bottom:
+      1px solid var(--color-border);
   }
 
-  a {
-    color: inherit;
+  /*
+   * サイト名
+   */
+  .site-title {
+    flex-shrink: 0;
+
+    color: var(--color-green-dark);
+
+    font-family:
+      "Zen Maru Gothic",
+      "Noto Sans JP",
+      sans-serif;
+
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+
     text-decoration: none;
+
+    transition: opacity 0.15s ease;
   }
 
-  a:hover {
-    text-decoration: underline;
+  .site-title:hover {
+    opacity: 0.7;
+  }
+
+  /*
+   * ナビゲーション
+   */
+  .site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+
+    min-width: 0;
+  }
+
+  .nav-link {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 0.5rem 0.7rem;
+
+    border-radius: 8px;
+
+    color: var(--color-text);
+
+    font-size: 0.95rem;
+    line-height: 1;
+
+    text-decoration: none;
+
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  /*
+   * マウスを乗せたとき
+   */
+  .nav-link:hover {
+    color: var(--color-green-dark);
+    background: var(--color-green-soft);
+  }
+
+  /*
+   * 現在開いているページ
+   */
+  .nav-link.is-current {
+    color: var(--color-green-dark);
+    font-weight: 700;
+  }
+
+  .nav-link.is-current::after {
+    content: "";
+
+    position: absolute;
+
+    right: 0.7rem;
+    bottom: 0.25rem;
+    left: 0.7rem;
+
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: var(--color-green);
+  }
+
+  /*
+   * Contact
+   */
+  .contact-link {
+    margin-left: 0.25rem;
+
+    border: 1px solid #628c3f;
+
+    background: #628c3f;
+    color: #fff;
+
+    font-weight: 700;
+  }
+
+  .contact-link:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-dark);
+    color: #fff;
+  }
+
+  /*
+   * Contactには現在地を示す下線を付けない
+   */
+  .contact-link::after {
+    display: none;
+  }
+
+  /*
+   * スマートフォン・狭い画面
+   *
+   * サイト名とナビゲーションを中央寄せ
+   */
+  @media (max-width: 850px) {
+    .site-header {
+      display: block;
+
+      min-height: 0;
+      padding: 1.25rem 0 1rem;
+
+      text-align: center;
+    }
+
+    .site-title {
+      display: inline-block;
+
+      margin-bottom: 0.9rem;
+    }
+
+    .site-nav {
+      justify-content: center;
+      flex-wrap: wrap;
+
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      min-height: 38px;
+
+      padding: 0.45rem 0.6rem;
+
+      font-size: 0.9rem;
+    }
+
+    .nav-link.is-current::after {
+      right: 0.6rem;
+      left: 0.6rem;
+    }
+
+    .contact-link {
+      margin-left: 0;
+    }
   }
 </style>

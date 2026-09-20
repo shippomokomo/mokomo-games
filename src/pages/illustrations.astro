@@ -57,7 +57,7 @@ const illustrations = Object.entries(modules)
 
   <div class="filters">
     <div class="filter-group">
-      <span class="filter-label">種類</span>
+      <span class="filter-label">Type</span>
 
       <div class="filter-buttons">
         <button
@@ -87,7 +87,7 @@ const illustrations = Object.entries(modules)
     </div>
 
     <div class="filter-group">
-      <span class="filter-label">キャラクター</span>
+      <span class="filter-label">Character</span>
 
       <div class="filter-buttons">
         <button
@@ -528,17 +528,26 @@ const illustrations = Object.entries(modules)
 </BaseLayout>
 
 <style>
+  /*
+   * フィルター全体
+   */
   .filters {
     display: grid;
     gap: 1rem;
+
     max-width: 1400px;
-    margin: 0 auto 2rem;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background: #f8f8f8;
+    margin: 0 auto 2.5rem;
+    padding: 1.25rem;
+
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+
+    background: #fff;
   }
 
+  /*
+   * Type / Character
+   */
   .filter-group {
     display: flex;
     align-items: center;
@@ -548,6 +557,9 @@ const illustrations = Object.entries(modules)
 
   .filter-label {
     min-width: 7rem;
+
+    color: var(--color-text);
+
     font-weight: 700;
   }
 
@@ -557,53 +569,109 @@ const illustrations = Object.entries(modules)
     flex-wrap: wrap;
   }
 
+  /*
+   * フィルターボタン共通
+   */
   .filter-button,
   .artist-filter-button,
   .artist-filter-clear {
-    border: 1px solid #bbb;
-    border-radius: 999px;
-    background: white;
     padding: 0.45rem 0.9rem;
+
+    border: 1px solid var(--color-green);
+    border-radius: 999px;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
     font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+
     cursor: pointer;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
   }
 
   .filter-button:hover,
   .artist-filter-button:hover,
   .artist-filter-clear:hover {
-    background: #eee;
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
   }
 
+  /*
+   * 選択中のフィルター
+   */
   .filter-button.is-active {
-    background: #222;
-    border-color: #222;
-    color: white;
+    border-color: #628c3f;
+
+    background: #628c3f;
+    color: #fff;
   }
 
+  .filter-button.is-active:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-dark);
+    color: #fff;
+  }
+
+  /*
+   * 作者フィルター使用中
+   */
   .artist-filter {
     display: flex;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
+
     padding-top: 1rem;
-    border-top: 1px solid #ddd;
+
+    border-top: 1px solid var(--color-border);
   }
 
   .artist-filter[hidden] {
     display: none;
   }
 
+  .artist-filter strong {
+    color: var(--color-green-dark);
+  }
+
+  .artist-filter-clear {
+    padding: 0.35rem 0.75rem;
+
+    font-size: 0.9rem;
+  }
+
+  /*
+   * 検索結果なし
+   */
   .no-results {
     max-width: 1400px;
     margin: 2rem auto;
+
+    color: var(--color-text-soft);
+
     text-align: center;
   }
 
+  /*
+   * イラスト一覧
+   */
   .illustration-grid {
     display: grid;
     grid-template-columns:
       repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+
+    gap: 1.75rem;
+
     max-width: 1400px;
     margin: 0 auto;
   }
@@ -616,48 +684,88 @@ const illustrations = Object.entries(modules)
     display: none;
   }
 
+  /*
+   * 画像
+   *
+   * Home / Referencesと同様、
+   * クリックできる画像には枠線を付けない
+   */
   .illustration-image {
     display: block;
+
     width: 100%;
     height: auto;
+
     border-radius: 10px;
+
     cursor: zoom-in;
+
     transition:
       transform 0.15s ease,
       opacity 0.15s ease;
   }
 
   .illustration-image:hover {
-    transform: scale(1.015);
-    opacity: 0.9;
+    transform: scale(1.01);
+    opacity: 0.96;
   }
 
+  /*
+   * 作者情報
+   */
   .illustration-info {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-top: 0.6rem;
+
+    margin-top: 0.75rem;
   }
 
   .artist-link {
-    color: inherit;
+    color: var(--color-green-dark);
+
+    font-weight: 600;
+
+    text-underline-offset: 0.2em;
+
+    transition: color 0.15s ease;
   }
 
+  .artist-link:hover {
+    color: var(--color-green);
+  }
+
+  /*
+   * 「作品を見る」は作者名の補助操作なので
+   * 少し小さめのボタン
+   */
   .artist-filter-button {
-    padding: 0.25rem 0.65rem;
+    padding: 0.3rem 0.7rem;
+
     font-size: 0.85rem;
   }
 
+  /*
+   * Lightbox
+   *
+   * Home / References / Scheduleと同じデザイン
+   */
   .lightbox {
     position: fixed;
+
     inset: 0;
+
     z-index: 1000;
+
     display: none;
+
     align-items: center;
     justify-content: center;
+
     background: rgba(0, 0, 0, 0.88);
+
     padding: 3rem 5rem;
   }
 
@@ -667,22 +775,35 @@ const illustrations = Object.entries(modules)
 
   .lightbox-image {
     display: block;
+
     max-width: 90vw;
     max-height: 90vh;
+
     width: auto;
     height: auto;
+
     object-fit: contain;
   }
 
+  /*
+   * Lightboxボタン
+   */
   .lightbox button {
     position: fixed;
+
     z-index: 1001;
+
     border: 0;
+
     background: transparent;
     color: white;
+
     cursor: pointer;
+
     line-height: 1;
+
     opacity: 0.8;
+
     transition:
       opacity 0.15s ease,
       transform 0.15s ease;
@@ -692,9 +813,13 @@ const illustrations = Object.entries(modules)
     opacity: 1;
   }
 
+  /*
+   * ×
+   */
   .lightbox-close {
     top: 1rem;
     right: 1.5rem;
+
     font-size: 3rem;
   }
 
@@ -702,33 +827,59 @@ const illustrations = Object.entries(modules)
     transform: scale(1.1);
   }
 
+  /*
+   * 左矢印
+   */
   .lightbox-prev {
     left: 1rem;
     top: 50%;
+
     transform: translateY(-50%);
+
     font-size: 5rem;
   }
 
   .lightbox-prev:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform:
+      translateY(-50%)
+      scale(1.1);
   }
 
+  /*
+   * 右矢印
+   */
   .lightbox-next {
     right: 1rem;
     top: 50%;
+
     transform: translateY(-50%);
+
     font-size: 5rem;
   }
 
   .lightbox-next:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform:
+      translateY(-50%)
+      scale(1.1);
   }
 
+  /*
+   * Lightbox表示中は
+   * 背景ページをスクロールさせない
+   */
   :global(body.lightbox-open) {
     overflow: hidden;
   }
 
+  /*
+   * スマートフォン
+   */
   @media (max-width: 700px) {
+    .filters {
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
     .filter-group {
       align-items: flex-start;
       flex-direction: column;
@@ -739,15 +890,26 @@ const illustrations = Object.entries(modules)
       min-width: 0;
     }
 
+    .artist-filter {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
     .illustration-grid {
       grid-template-columns: 1fr;
-      gap: 1rem;
+
+      gap: 1.5rem;
     }
 
     .illustration-image {
       border-radius: 8px;
     }
 
+    /*
+     * スマホのLightboxも
+     * 他ページと同じ
+     */
     .lightbox {
       padding: 3rem 2.5rem;
     }
@@ -760,16 +922,19 @@ const illustrations = Object.entries(modules)
     .lightbox-close {
       top: 0.75rem;
       right: 1rem;
+
       font-size: 2.5rem;
     }
 
     .lightbox-prev {
       left: 0.25rem;
+
       font-size: 3.5rem;
     }
 
     .lightbox-next {
       right: 0.25rem;
+
       font-size: 3.5rem;
     }
   }

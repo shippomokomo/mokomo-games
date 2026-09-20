@@ -8,27 +8,171 @@ const { title = 'Mokomo Games' } = Astro.props;
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
     <title>{title}</title>
+
+    <!-- Google Fonts -->
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@700&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
-    <Header />
+    <div class="site-container">
+      <Header />
 
-    <main>
-      <slot />
-    </main>
+      <main class="site-main">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>
 
 <style is:global>
+  /*
+   * サイト全体で使用する色
+   */
+  :root {
+    --color-text: #262822;
+    --color-text-soft: #62665b;
+
+    /*
+     * もこものメインカラー
+     *
+     * 明るさを保ちつつ、
+     * 彩度を少し上げたフレッシュな緑
+     */
+    --color-green: #7ead52;
+    --color-green-dark: #527a32;
+    --color-green-soft: #f0f7e8;
+
+    /*
+     * 補助色
+     */
+    --color-cream: #faf8f0;
+
+    /*
+     * 枠線・背景
+     */
+    --color-border: #dfe5d8;
+    --color-background: #faf9f4;
+  }
+
+  /*
+   * サイト全体の基本設定
+   */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 0;
+  }
+
   body {
-    font-family: sans-serif;
-    margin: 2rem;
+    margin: 0;
+
+    background: var(--color-background);
+    color: var(--color-text);
+
+    /*
+     * 本文用フォント
+     */
+    font-family:
+      "Noto Sans JP",
+      sans-serif;
+
     line-height: 1.7;
   }
 
-  main {
-    margin-top: 2rem;
+  /*
+   * ページ全体の最大横幅
+   */
+  .site-container {
+    width: min(100% - 3rem, 1400px);
+    margin: 0 auto;
+  }
+
+  /*
+   * ヘッダーと本文の間隔
+   */
+  .site-main {
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+  }
+
+  /*
+   * 見出し
+   *
+   * 見出しには丸みのある
+   * Zen Maru Gothicを使用
+   */
+  h1,
+  h2,
+  h3 {
+    font-family:
+      "Zen Maru Gothic",
+      "Noto Sans JP",
+      sans-serif;
+
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  /*
+   * 画像
+   */
+  img {
+    max-width: 100%;
+  }
+
+  /*
+   * リンク
+   */
+  a {
+    color: inherit;
+  }
+
+  /*
+   * キーボード操作時のフォーカス
+   */
+  :focus-visible {
+    outline: 3px solid var(--color-green);
+    outline-offset: 3px;
+  }
+
+  /*
+   * スマートフォン
+   */
+  @media (max-width: 700px) {
+    .site-container {
+      width: min(100% - 2rem, 1400px);
+    }
+
+    .site-main {
+      padding-top: 1.5rem;
+      padding-bottom: 3.5rem;
+    }
   }
 </style>

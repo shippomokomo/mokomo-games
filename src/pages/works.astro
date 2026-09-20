@@ -85,74 +85,163 @@ import { workSections } from '../data/works';
     margin-bottom: 0.5rem;
   }
 
+  /*
+   * ページ冒頭
+   */
   .intro {
     margin: 0 0 1.5rem;
+
+    color: var(--color-text-soft);
+
     line-height: 1.8;
   }
 
+  /*
+   * Interviews / Games / MODs
+   */
   .works-nav {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
+
     margin-bottom: 3rem;
   }
 
   .works-nav a {
-    display: inline-block;
-    padding: 0.55rem 1rem;
-    border: 1px solid currentColor;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0.65rem 1.15rem;
+
+    border: 1px solid var(--color-green);
     border-radius: 999px;
-    color: inherit;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
+    font-weight: 600;
+    line-height: 1.2;
+
     text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
   }
 
   .works-nav a:hover {
-    text-decoration: underline;
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
+
+    transform: translateY(-1px);
   }
 
+  /*
+   * カテゴリ
+   */
   .works-section {
     margin-bottom: 4rem;
+
     scroll-margin-top: 2rem;
   }
 
   .works-section h2 {
-    margin-bottom: 1.25rem;
+    margin: 0 0 1.25rem;
+
+    color: var(--color-text);
+
+    font-size: 2rem;
   }
 
+  /*
+   * 作品一覧
+   */
   .works-list {
     display: grid;
     gap: 1rem;
   }
 
+  /*
+   * 作品カード
+   */
   .work-card {
     overflow: hidden;
-    border: 1px solid #d5d5d5;
-    border-radius: 12px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+
+    background: #fff;
+
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .work-card:hover {
+    border-color: var(--color-green);
+  }
+
+  .work-card[open] {
+    border-color: var(--color-green);
+  }
+
+  /*
+   * カード上部
+   */
+  .work-card summary {
+    display: block;
+
+    cursor: pointer;
+    list-style: none;
+
+    transition: background-color 0.15s ease;
+  }
+
+  .work-card summary:hover {
+    background: var(--color-green-soft);
+  }
+
+  .work-card[open] summary {
     background: #fff;
   }
 
-  .work-card summary {
-    display: block;
-    cursor: pointer;
-    list-style: none;
+  .work-card[open] summary:hover {
+    background: var(--color-green-soft);
   }
 
   .work-card summary::-webkit-details-marker {
     display: none;
   }
 
+  /*
+   * 画像＋説明
+   */
   .work-summary {
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 1.5rem;
     align-items: center;
+
     padding: 1rem;
   }
 
+  /*
+   * 作品画像
+   *
+   * 画像自体には枠線を付けない
+   */
   .work-summary img {
     display: block;
+
     width: 100%;
     height: auto;
+
     border-radius: 8px;
   }
 
@@ -160,29 +249,52 @@ import { workSections } from '../data/works';
     min-width: 0;
   }
 
+  /*
+   * 作品タイトル
+   */
   .work-summary-text h3 {
     margin: 0 0 0.75rem;
+
+    color: var(--color-green-dark);
+
     font-size: 1.15rem;
     line-height: 1.5;
   }
 
+  /*
+   * 作品説明
+   */
   .work-summary-text p {
     margin: 0;
+
+    color: var(--color-text);
+
     line-height: 1.75;
   }
 
+  /*
+   * 詳細を見る / 閉じる
+   */
   .open-label {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+
     margin-top: 1rem;
+
+    color: var(--color-green-dark);
+
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .arrow {
     display: inline-block;
+
+    color: var(--color-green);
+
     font-size: 0.7rem;
+
     transition: transform 0.2s ease;
   }
 
@@ -202,58 +314,116 @@ import { workSections } from '../data/works';
     transform: rotate(180deg);
   }
 
+  /*
+   * 開いた部分
+   */
   .work-details {
-    padding: 0 1rem 1.25rem;
     margin: 0 1rem;
-    border-top: 1px solid #e5e5e5;
+    padding: 0 0 1.25rem;
+
+    border-top: 1px solid var(--color-border);
   }
 
+  /*
+   * 外部リンク
+   */
   .work-links {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
+
     margin-top: 1.25rem;
   }
 
   .work-links a {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
     padding: 0.6rem 0.9rem;
-    border: 1px solid currentColor;
-    border-radius: 8px;
-    color: inherit;
+
+    border: 1px solid var(--color-green);
+    border-radius: 999px;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
+    font-weight: 600;
+    line-height: 1.2;
+
     text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
   }
 
   .work-links a:hover {
-    text-decoration: underline;
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
+
+    transform: translateY(-1px);
   }
 
+  /*
+   * 注意書き
+   */
   .notice {
     margin: 1rem 0 0;
+
+    color: var(--color-text-soft);
+
     font-size: 0.9rem;
     line-height: 1.7;
   }
 
+  /*
+   * スマートフォン
+   */
   @media (max-width: 700px) {
     .works-nav {
       margin-bottom: 2.5rem;
+    }
+
+    .works-nav a {
+      min-height: 40px;
+
+      padding: 0.55rem 0.9rem;
+
+      font-size: 0.9rem;
     }
 
     .works-section {
       margin-bottom: 3rem;
     }
 
+    .works-section h2 {
+      font-size: 1.7rem;
+    }
+
+    /*
+     * スマホでは
+     * 画像→文章の1列
+     */
     .work-summary {
       grid-template-columns: 1fr;
+
+      gap: 1rem;
     }
 
     .work-summary img {
       max-height: 360px;
+
       object-fit: contain;
     }
 
     .work-details {
-      margin: 0;
+      margin: 0 1rem;
     }
   }
 </style>
