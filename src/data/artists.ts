@@ -13,4 +13,9 @@ export const artists = {
     name: 'マコフシャン・マウ',
     url: 'https://x.com/macofmau',
   },
+
+  nekonominmi: {
+    name: '猫野みんみ',
+    url: 'https://x.com/MinMi_0701',
+  },
 };

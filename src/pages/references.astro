@@ -1,8 +1,531 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { artists } from '../data/artists';
+
+const references = {
+  keyArt: {
+    src: '/images/references/key-art_2026.webp',
+    alt: 'Mokomo Key Art',
+    artist: artists.kikuri,
+  },
+
+  current: {
+    src: '/images/references/reference-sheet_2025.webp',
+    alt: 'Mokomo Reference Sheet September 2025 to Current',
+    artist: artists.kikuri,
+  },
+
+  past: [
+    {
+      period: '2021 to September 2025',
+      src: '/images/references/reference-sheet_2021.webp',
+      alt: 'Mokomo Reference Sheet 2021 to September 2025',
+      artist: artists.nekonominmi,
+    },
+    {
+      period: '2022 to September 2025',
+      src: '/images/references/reference-sheet_2022.webp',
+      alt: 'Mokomo Reference Sheet 2022 to September 2025',
+      artist: artists.nekonominmi,
+    },
+  ],
+};
 ---
 
 <BaseLayout title="References | Mokomo Games">
   <h1>References</h1>
-  <p>三面図などの資料を掲載します。</p>
+
+  <div class="references-page">
+    <div class="intro">
+      <p>
+        いつもイラスト等を作成してくださりありがとうございます！<br />
+        こちらで三面図などの資料をご参照ください！
+      </p>
+    </div>
+
+    <section class="reference-section">
+      <h2>Key Art</h2>
+
+      <div class="large-reference">
+        <img
+          class="reference-image"
+          src={references.keyArt.src}
+          data-full={references.keyArt.src}
+          alt={references.keyArt.alt}
+          loading="lazy"
+          tabindex="0"
+        />
+
+        <div class="artist-info">
+          <a
+            href={references.keyArt.artist.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {references.keyArt.artist.name}さん
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="reference-section">
+      <h2>Reference Sheet</h2>
+
+      <div class="current-reference">
+        <h3>September 2025 to Current</h3>
+
+        <div class="large-reference">
+          <img
+            class="reference-image"
+            src={references.current.src}
+            data-full={references.current.src}
+            alt={references.current.alt}
+            loading="lazy"
+            tabindex="0"
+          />
+
+          <div class="artist-info">
+            <a
+              href={references.current.artist.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {references.current.artist.name}さん
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="reference-divider" />
+
+      <div class="past-reference-grid">
+        {references.past.map((reference) => (
+          <div class="past-reference">
+            <h3>{reference.period}</h3>
+
+            <img
+              class="reference-image"
+              src={reference.src}
+              data-full={reference.src}
+              alt={reference.alt}
+              loading="lazy"
+              tabindex="0"
+            />
+
+            <div class="artist-info">
+              <a
+                href={reference.artist.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {reference.artist.name}さん
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <div
+    id="lightbox"
+    class="lightbox"
+    aria-hidden="true"
+  >
+    <button
+      class="lightbox-close"
+      type="button"
+      aria-label="閉じる"
+    >
+      ×
+    </button>
+
+    <button
+      class="lightbox-prev"
+      type="button"
+      aria-label="前の画像"
+    >
+      ‹
+    </button>
+
+    <img
+      class="lightbox-image"
+      src=""
+      alt=""
+    />
+
+    <button
+      class="lightbox-next"
+      type="button"
+      aria-label="次の画像"
+    >
+      ›
+    </button>
+  </div>
+
+  <script>
+    const images = Array.from(
+      document.querySelectorAll<HTMLImageElement>(
+        '.reference-image'
+      )
+    );
+
+    const lightbox =
+      document.querySelector<HTMLElement>('#lightbox');
+
+    const lightboxImage =
+      document.querySelector<HTMLImageElement>(
+        '.lightbox-image'
+      );
+
+    const closeButton =
+      document.querySelector<HTMLButtonElement>(
+        '.lightbox-close'
+      );
+
+    const prevButton =
+      document.querySelector<HTMLButtonElement>(
+        '.lightbox-prev'
+      );
+
+    const nextButton =
+      document.querySelector<HTMLButtonElement>(
+        '.lightbox-next'
+      );
+
+    let currentIndex = 0;
+
+    function showImage(index: number) {
+      if (
+        !lightbox ||
+        !lightboxImage ||
+        images.length === 0
+      ) {
+        return;
+      }
+
+      if (index < 0) {
+        index = images.length - 1;
+      }
+
+      if (index >= images.length) {
+        index = 0;
+      }
+
+      currentIndex = index;
+
+      const image = images[currentIndex];
+      const fullSrc = image.getAttribute('data-full');
+
+      if (!fullSrc) return;
+
+      lightboxImage.setAttribute('src', fullSrc);
+      lightboxImage.setAttribute(
+        'alt',
+        image.getAttribute('alt') ?? ''
+      );
+
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-open');
+    }
+
+    function openImage(image: HTMLImageElement) {
+      const index = images.indexOf(image);
+
+      if (index === -1) return;
+
+      showImage(index);
+    }
+
+    function closeLightbox() {
+      if (!lightbox || !lightboxImage) return;
+
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+
+      lightboxImage.setAttribute('src', '');
+      lightboxImage.setAttribute('alt', '');
+
+      document.body.classList.remove('lightbox-open');
+    }
+
+    function showPrevious() {
+      showImage(currentIndex - 1);
+    }
+
+    function showNext() {
+      showImage(currentIndex + 1);
+    }
+
+    images.forEach((image) => {
+      image.addEventListener('click', () => {
+        openImage(image);
+      });
+
+      image.addEventListener('keydown', (event) => {
+        if (
+          event.key === 'Enter' ||
+          event.key === ' '
+        ) {
+          event.preventDefault();
+          openImage(image);
+        }
+      });
+    });
+
+    closeButton?.addEventListener(
+      'click',
+      closeLightbox
+    );
+
+    prevButton?.addEventListener(
+      'click',
+      showPrevious
+    );
+
+    nextButton?.addEventListener(
+      'click',
+      showNext
+    );
+
+    lightbox?.addEventListener('click', (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!lightbox?.classList.contains('is-open')) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+
+      if (event.key === 'ArrowLeft') {
+        showPrevious();
+      }
+
+      if (event.key === 'ArrowRight') {
+        showNext();
+      }
+    });
+  </script>
 </BaseLayout>
+
+<style>
+  .references-page {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .intro {
+    margin-bottom: 3rem;
+  }
+
+  .intro p {
+    line-height: 1.8;
+  }
+
+  .reference-section {
+    margin-bottom: 4rem;
+  }
+
+  .reference-section h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .reference-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .large-reference {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .reference-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    cursor: zoom-in;
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .reference-image:hover {
+    transform: scale(1.01);
+    opacity: 0.9;
+  }
+
+  .artist-info {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+  }
+
+  .artist-info a {
+    color: inherit;
+  }
+
+  .current-reference {
+    margin-bottom: 3rem;
+  }
+
+  .current-reference > h3 {
+    text-align: center;
+  }
+
+  .reference-divider {
+    margin: 3.5rem 0;
+    border: 0;
+    border-top: 1px solid #ccc;
+  }
+
+  .past-reference-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .past-reference h3 {
+    text-align: center;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.88);
+    padding: 3rem 5rem;
+  }
+
+  .lightbox.is-open {
+    display: flex;
+  }
+
+  .lightbox-image {
+    display: block;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .lightbox button {
+    position: fixed;
+    z-index: 1001;
+    border: 0;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .lightbox button:hover {
+    opacity: 1;
+  }
+
+  .lightbox-close {
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 3rem;
+  }
+
+  .lightbox-close:hover {
+    transform: scale(1.1);
+  }
+
+  .lightbox-prev {
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 5rem;
+  }
+
+  .lightbox-prev:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .lightbox-next {
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 5rem;
+  }
+
+  .lightbox-next:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  :global(body.lightbox-open) {
+    overflow: hidden;
+  }
+
+  @media (max-width: 700px) {
+    .intro {
+      margin-bottom: 2rem;
+    }
+
+    .reference-section {
+      margin-bottom: 3rem;
+    }
+
+    .large-reference {
+      max-width: none;
+    }
+
+    .past-reference-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .reference-divider {
+      margin: 2.5rem 0;
+    }
+
+    .reference-image {
+      border-radius: 8px;
+    }
+
+    .lightbox {
+      padding: 3rem 2.5rem;
+    }
+
+    .lightbox-image {
+      max-width: 94vw;
+      max-height: 88vh;
+    }
+
+    .lightbox-close {
+      top: 0.75rem;
+      right: 1rem;
+      font-size: 2.5rem;
+    }
+
+    .lightbox-prev {
+      left: 0.25rem;
+      font-size: 3.5rem;
+    }
+
+    .lightbox-next {
+      right: 0.25rem;
+      font-size: 3.5rem;
+    }
+  }
+</style>
