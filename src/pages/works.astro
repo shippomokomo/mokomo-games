@@ -1,8 +1,259 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { workSections } from '../data/works';
 ---
 
 <BaseLayout title="Works | Mokomo Games">
-  <h1>Works</h1>
-  <p>取材やゲーム出演などの実績を掲載します。</p>
+  <main class="works-page">
+    <h1>Works</h1>
+
+    <p class="intro">
+      もこもが出演させていただいた作品等をこちらでご紹介しています！
+    </p>
+
+    <nav class="works-nav" aria-label="Works categories">
+      {
+        workSections.map((section) => (
+          <a href={`#${section.id}`}>{section.title}</a>
+        ))
+      }
+    </nav>
+
+    {
+      workSections.map((section) => (
+        <section class="works-section" id={section.id}>
+          <h2>{section.title}</h2>
+
+          <div class="works-list">
+            {section.works.map((work) => (
+              <details class="work-card">
+                <summary>
+                  <div class="work-summary">
+                    <img
+                      src={`/images/works/${work.image}`}
+                      alt=""
+                      loading="lazy"
+                    />
+
+                    <div class="work-summary-text">
+                      <h3>{work.title}</h3>
+
+                      <p>{work.description}</p>
+
+                      <span class="open-label">
+                        <span class="open-text">詳細を見る</span>
+                        <span class="close-text">閉じる</span>
+                        <span class="arrow" aria-hidden="true">▼</span>
+                      </span>
+                    </div>
+                  </div>
+                </summary>
+
+                <div class="work-details">
+                  <div class="work-links">
+                    {work.links.map((link) => (
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+
+                  {'notice' in work && work.notice && (
+                    <p class="notice">{work.notice}</p>
+                  )}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </main>
 </BaseLayout>
+
+<style>
+  .works-page {
+    width: min(100%, 960px);
+    margin: 0 auto;
+  }
+
+  .works-page h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .intro {
+    margin: 0 0 1.5rem;
+    line-height: 1.8;
+  }
+
+  .works-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .works-nav a {
+    display: inline-block;
+    padding: 0.55rem 1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .works-nav a:hover {
+    text-decoration: underline;
+  }
+
+  .works-section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .works-section h2 {
+    margin-bottom: 1.25rem;
+  }
+
+  .works-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .work-card {
+    overflow: hidden;
+    border: 1px solid #d5d5d5;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .work-card summary {
+    display: block;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .work-card summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .work-summary {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .work-summary img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .work-summary-text {
+    min-width: 0;
+  }
+
+  .work-summary-text h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.15rem;
+    line-height: 1.5;
+  }
+
+  .work-summary-text p {
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  .open-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .arrow {
+    display: inline-block;
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+  }
+
+  .close-text {
+    display: none;
+  }
+
+  .work-card[open] .open-text {
+    display: none;
+  }
+
+  .work-card[open] .close-text {
+    display: inline;
+  }
+
+  .work-card[open] .arrow {
+    transform: rotate(180deg);
+  }
+
+  .work-details {
+    padding: 0 1rem 1.25rem;
+    margin: 0 1rem;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .work-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .work-links a {
+    display: inline-block;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .work-links a:hover {
+    text-decoration: underline;
+  }
+
+  .notice {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 700px) {
+    .works-nav {
+      margin-bottom: 2.5rem;
+    }
+
+    .works-section {
+      margin-bottom: 3rem;
+    }
+
+    .work-summary {
+      grid-template-columns: 1fr;
+    }
+
+    .work-summary img {
+      max-height: 360px;
+      object-fit: contain;
+    }
+
+    .work-details {
+      margin: 0;
+    }
+  }
+</style>
