@@ -46,7 +46,7 @@ const references = {
     <section class="reference-section">
       <h2>Key Art</h2>
 
-      <div class="large-reference">
+      <div class="large-reference key-art">
         <img
           class="reference-image"
           src={references.keyArt.src}
@@ -359,6 +359,18 @@ const references = {
       opacity 0.15s ease;
   }
 
+  /*
+   * Key ArtだけPCでは画面の高さに合わせて
+   * 少し小さく表示する
+   */
+  .key-art .reference-image {
+    width: auto;
+    max-width: 100%;
+    max-height: 70vh;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+
   .reference-image:hover {
     transform: scale(1.01);
     opacity: 0.9;
@@ -488,6 +500,16 @@ const references = {
 
     .large-reference {
       max-width: none;
+    }
+
+    /*
+     * スマホでは通常どおり
+     * 横幅いっぱいを使う
+     */
+    .key-art .reference-image {
+      width: 100%;
+      max-width: none;
+      max-height: none;
     }
 
     .past-reference-grid {
