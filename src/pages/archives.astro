@@ -1,8 +1,796 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  archiveCategories,
+  games,
+} from '../data/archives';
+
+const alphabetGroups = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G',
+  'H', 'I', 'J', 'K', 'L', 'M', 'N',
+  'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+  'V', 'W', 'X', 'Y', 'Z',
+];
+
+const japaneseGroups = [
+  'あ',
+  'か',
+  'さ',
+  'た',
+  'な',
+  'は',
+  'ま',
+  'や',
+  'ら',
+  'わ',
+];
+
+/*
+ * 英語タイトルの分類・並び替え用。
+ *
+ * ・先頭の「The 」を無視
+ * ・Ö → O のようにアクセント記号を無視
+ *
+ * 表示されるタイトル自体は変更しません。
+ */
+function normalizeLatinTitle(title: string) {
+  return title
+    .trim()
+    .replace(/^The\s+/i, '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+/*
+ * ひらがな・カタカナを
+ * 五十音の行に分類します。
+ */
+function getJapaneseGroup(character: string) {
+  const groups: Record<string, string> = {
+    // あ行
+    あ: 'あ',
+    い: 'あ',
+    う: 'あ',
+    え: 'あ',
+    お: 'あ',
+
+    ア: 'あ',
+    イ: 'あ',
+    ウ: 'あ',
+    エ: 'あ',
+    オ: 'あ',
+
+    ヴ: 'あ',
+
+    // か行
+    か: 'か',
+    き: 'か',
+    く: 'か',
+    け: 'か',
+    こ: 'か',
+
+    が: 'か',
+    ぎ: 'か',
+    ぐ: 'か',
+    げ: 'か',
+    ご: 'か',
+
+    カ: 'か',
+    キ: 'か',
+    ク: 'か',
+    ケ: 'か',
+    コ: 'か',
+
+    ガ: 'か',
+    ギ: 'か',
+    グ: 'か',
+    ゲ: 'か',
+    ゴ: 'か',
+
+    // さ行
+    さ: 'さ',
+    し: 'さ',
+    す: 'さ',
+    せ: 'さ',
+    そ: 'さ',
+
+    ざ: 'さ',
+    じ: 'さ',
+    ず: 'さ',
+    ぜ: 'さ',
+    ぞ: 'さ',
+
+    サ: 'さ',
+    シ: 'さ',
+    ス: 'さ',
+    セ: 'さ',
+    ソ: 'さ',
+
+    ザ: 'さ',
+    ジ: 'さ',
+    ズ: 'さ',
+    ゼ: 'さ',
+    ゾ: 'さ',
+
+    // た行
+    た: 'た',
+    ち: 'た',
+    つ: 'た',
+    て: 'た',
+    と: 'た',
+
+    だ: 'た',
+    ぢ: 'た',
+    づ: 'た',
+    で: 'た',
+    ど: 'た',
+
+    タ: 'た',
+    チ: 'た',
+    ツ: 'た',
+    テ: 'た',
+    ト: 'た',
+
+    ダ: 'た',
+    ヂ: 'た',
+    ヅ: 'た',
+    デ: 'た',
+    ド: 'た',
+
+    // な行
+    な: 'な',
+    に: 'な',
+    ぬ: 'な',
+    ね: 'な',
+    の: 'な',
+
+    ナ: 'な',
+    ニ: 'な',
+    ヌ: 'な',
+    ネ: 'な',
+    ノ: 'な',
+
+    // は行
+    は: 'は',
+    ひ: 'は',
+    ふ: 'は',
+    へ: 'は',
+    ほ: 'は',
+
+    ば: 'は',
+    び: 'は',
+    ぶ: 'は',
+    べ: 'は',
+    ぼ: 'は',
+
+    ぱ: 'は',
+    ぴ: 'は',
+    ぷ: 'は',
+    ぺ: 'は',
+    ぽ: 'は',
+
+    ハ: 'は',
+    ヒ: 'は',
+    フ: 'は',
+    ヘ: 'は',
+    ホ: 'は',
+
+    バ: 'は',
+    ビ: 'は',
+    ブ: 'は',
+    ベ: 'は',
+    ボ: 'は',
+
+    パ: 'は',
+    ピ: 'は',
+    プ: 'は',
+    ペ: 'は',
+    ポ: 'は',
+
+    // ま行
+    ま: 'ま',
+    み: 'ま',
+    む: 'ま',
+    め: 'ま',
+    も: 'ま',
+
+    マ: 'ま',
+    ミ: 'ま',
+    ム: 'ま',
+    メ: 'ま',
+    モ: 'ま',
+
+    // や行
+    や: 'や',
+    ゆ: 'や',
+    よ: 'や',
+
+    ヤ: 'や',
+    ユ: 'や',
+    ヨ: 'や',
+
+    // ら行
+    ら: 'ら',
+    り: 'ら',
+    る: 'ら',
+    れ: 'ら',
+    ろ: 'ら',
+
+    ラ: 'ら',
+    リ: 'ら',
+    ル: 'ら',
+    レ: 'ら',
+    ロ: 'ら',
+
+    // わ行
+    わ: 'わ',
+    を: 'わ',
+    ん: 'わ',
+
+    ワ: 'わ',
+    ヲ: 'わ',
+    ン: 'わ',
+  };
+
+  return groups[character];
+}
+
+/*
+ * タイトルを分類します。
+ *
+ * reading が設定されている場合は、
+ * title ではなく reading を使います。
+ *
+ * 例：
+ * 鏡のマジョリティア
+ * reading: 'か'
+ * → か行
+ */
+function getGroup(game: {
+  title: string;
+  url: string;
+  sponsored?: boolean;
+  reading?: string;
+}) {
+  /*
+   * 漢字タイトルなど、
+   * reading が設定されている場合
+   */
+  if (game.reading) {
+    const readingCharacter =
+      game.reading.trim().charAt(0);
+
+    const japaneseGroup =
+      getJapaneseGroup(readingCharacter);
+
+    if (japaneseGroup) {
+      return japaneseGroup;
+    }
+  }
+
+  const groupTitle =
+    normalizeLatinTitle(game.title);
+
+  const firstCharacter =
+    groupTitle.charAt(0);
+
+  const upperCharacter =
+    firstCharacter.toUpperCase();
+
+  /*
+   * 英字
+   *
+   * Öoo → O
+   * The Witness → W
+   */
+  if (/^[A-Z]$/.test(upperCharacter)) {
+    return upperCharacter;
+  }
+
+  /*
+   * 数字
+   */
+  if (/^[0-9]$/.test(firstCharacter)) {
+    return '0-9';
+  }
+
+  /*
+   * ひらがな・カタカナ
+   */
+  const japaneseGroup =
+    getJapaneseGroup(firstCharacter);
+
+  if (japaneseGroup) {
+    return japaneseGroup;
+  }
+
+  /*
+   * 分類できないタイトル。
+   *
+   * 「わ」に勝手に入れず、
+   * その他に入れます。
+   */
+  return 'その他';
+}
+
+/*
+ * 並び替え用の文字列を作ります。
+ *
+ * reading がある場合は reading を優先します。
+ */
+function getSortTitle(game: {
+  title: string;
+  url: string;
+  sponsored?: boolean;
+  reading?: string;
+}) {
+  if (game.reading) {
+    return game.reading
+      .normalize('NFKC')
+      .toLowerCase();
+  }
+
+  return normalizeLatinTitle(game.title)
+    .normalize('NFKC')
+    .toLowerCase();
+}
+
+/*
+ * 全ゲームを並び替えます。
+ */
+const sortedGames = [...games].sort((a, b) =>
+  getSortTitle(a).localeCompare(
+    getSortTitle(b),
+    ['ja', 'en'],
+    {
+      numeric: true,
+      sensitivity: 'base',
+    }
+  )
+);
+
+/*
+ * A～Z
+ * 0-9
+ * あ～わ
+ * その他
+ *
+ * のグループを作ります。
+ *
+ * 0件のグループは表示しません。
+ */
+const groups = [
+  ...alphabetGroups,
+  '0-9',
+  ...japaneseGroups,
+  'その他',
+]
+  .map((name) => ({
+    name,
+    games: sortedGames.filter(
+      (game) => getGroup(game) === name
+    ),
+  }))
+  .filter((group) => group.games.length > 0);
 ---
 
 <BaseLayout title="Archives | Mokomo Games">
   <h1>Archives</h1>
-  <p>過去のライブ配信アーカイブを掲載します。</p>
+
+  <div class="archives-page">
+    <nav
+      class="archive-categories"
+      aria-label="Archive categories"
+    >
+      {archiveCategories.map((category) => (
+        <a
+          href={category.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {category.title}
+        </a>
+      ))}
+    </nav>
+
+    <section class="games-section">
+      <h2>Games</h2>
+
+      <p class="archive-note">
+        一部、近日実況配信予定のものも含まれます。
+      </p>
+
+      <p class="sponsored-note">
+        ★：デベロッパー様、パブリッシャー様のご依頼により
+        実況配信したタイトル
+      </p>
+
+      <div class="search-area">
+        <label for="game-search">
+          ゲームタイトルを検索
+        </label>
+
+        <div class="search-row">
+          <input
+            id="game-search"
+            class="game-search"
+            type="search"
+            placeholder="例：Minecraft"
+            autocomplete="off"
+          />
+
+          <button
+            type="button"
+            class="search-clear"
+            hidden
+          >
+            クリア
+          </button>
+        </div>
+      </div>
+
+      <p
+        class="search-result-count"
+        aria-live="polite"
+      ></p>
+
+      <p
+        class="no-results"
+        hidden
+      >
+        該当するタイトルはありません。
+      </p>
+
+      <div class="archive-grid">
+        {groups.map((group) => (
+          <section
+            class="archive-group"
+            data-group={group.name}
+          >
+            <h3>{group.name}</h3>
+
+            <ul>
+              {group.games.map((game) => (
+                <li
+                  class="game-item"
+                  data-title={game.title}
+                  data-reading={
+                    'reading' in game
+                      ? game.reading
+                      : ''
+                  }
+                >
+                  {
+                    'sponsored' in game &&
+                    game.sponsored && (
+                      <span
+                        class="sponsored-star"
+                        aria-label="依頼による実況配信"
+                        title="デベロッパー様、パブリッシャー様のご依頼による実況配信"
+                      >
+                        ★
+                      </span>
+                    )
+                  }
+
+                  {
+                    game.url ? (
+                      <a
+                        href={game.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {game.title}
+                      </a>
+                    ) : (
+                      <span class="no-link">
+                        {game.title}
+                      </span>
+                    )
+                  }
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const searchInput =
+      document.querySelector<HTMLInputElement>(
+        '#game-search'
+      );
+
+    const clearButton =
+      document.querySelector<HTMLButtonElement>(
+        '.search-clear'
+      );
+
+    const gameItems = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '.game-item'
+      )
+    );
+
+    const archiveGroups = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '.archive-group'
+      )
+    );
+
+    const noResults =
+      document.querySelector<HTMLElement>(
+        '.no-results'
+      );
+
+    const resultCount =
+      document.querySelector<HTMLElement>(
+        '.search-result-count'
+      );
+
+    function normalizeText(text: string) {
+      return text
+        .normalize('NFKC')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function updateSearch() {
+      if (!searchInput) return;
+
+      const query =
+        normalizeText(searchInput.value);
+
+      let visibleCount = 0;
+
+      gameItems.forEach((item) => {
+        const title =
+          normalizeText(
+            item.dataset.title ?? ''
+          );
+
+        const reading =
+          normalizeText(
+            item.dataset.reading ?? ''
+          );
+
+        const shouldShow =
+          query === '' ||
+          title.includes(query) ||
+          reading.includes(query);
+
+        item.hidden = !shouldShow;
+
+        if (shouldShow) {
+          visibleCount += 1;
+        }
+      });
+
+      archiveGroups.forEach((group) => {
+        const visibleItems =
+          group.querySelectorAll(
+            '.game-item:not([hidden])'
+          );
+
+        group.hidden =
+          visibleItems.length === 0;
+      });
+
+      if (clearButton) {
+        clearButton.hidden =
+          searchInput.value.length === 0;
+      }
+
+      if (noResults) {
+        noResults.hidden =
+          query === '' ||
+          visibleCount !== 0;
+      }
+
+      if (resultCount) {
+        if (
+          query === '' ||
+          visibleCount === 0
+        ) {
+          resultCount.textContent = '';
+        } else {
+          resultCount.textContent =
+            `${visibleCount}件見つかりました`;
+        }
+      }
+    }
+
+    searchInput?.addEventListener(
+      'input',
+      updateSearch
+    );
+
+    clearButton?.addEventListener(
+      'click',
+      () => {
+        if (!searchInput) return;
+
+        searchInput.value = '';
+
+        updateSearch();
+        searchInput.focus();
+      }
+    );
+
+    updateSearch();
+  </script>
 </BaseLayout>
+
+<style>
+  .archives-page {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .archive-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .archive-categories a {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .games-section h2 {
+    margin-bottom: 0.75rem;
+  }
+
+  .archive-note,
+  .sponsored-note {
+    margin: 0.4rem 0;
+    line-height: 1.7;
+  }
+
+  .sponsored-star {
+    margin-right: 0.2rem;
+  }
+
+  .search-area {
+    margin: 2rem 0 0.5rem;
+    max-width: 700px;
+  }
+
+  .search-area label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .game-search {
+    width: 100%;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid #bbb;
+    border-radius: 10px;
+    background: white;
+    font: inherit;
+  }
+
+  .game-search:focus {
+    outline: 2px solid #222;
+    outline-offset: 2px;
+  }
+
+  .search-clear {
+    flex: 0 0 auto;
+    padding: 0.6rem 1rem;
+    border: 1px solid #bbb;
+    border-radius: 10px;
+    background: white;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .search-clear:hover {
+    background: #eee;
+  }
+
+  .search-clear[hidden] {
+    display: none;
+  }
+
+  .search-result-count {
+    min-height: 1.5em;
+    margin: 0.5rem 0 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .no-results {
+    margin: 2rem 0;
+  }
+
+  .no-results[hidden] {
+    display: none;
+  }
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 3rem;
+    align-items: start;
+    margin-top: 1rem;
+  }
+
+  .archive-group {
+    min-width: 0;
+  }
+
+  .archive-group[hidden] {
+    display: none;
+  }
+
+  .archive-group h3 {
+    margin: 0 0 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #ccc;
+    font-size: 1.5rem;
+  }
+
+  .archive-group ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .game-item {
+    margin: 0.55rem 0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .game-item[hidden] {
+    display: none;
+  }
+
+  .game-item a {
+    color: inherit;
+  }
+
+  .game-item a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .no-link {
+    color: #777;
+  }
+
+  @media (max-width: 1000px) {
+    .archive-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .archive-categories {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .search-row {
+      align-items: stretch;
+    }
+
+    .archive-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>
