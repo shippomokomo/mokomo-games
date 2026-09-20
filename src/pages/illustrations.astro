@@ -1,8 +1,776 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { artists } from '../data/artists';
+
+const modules = import.meta.glob(
+  '/public/images/illustrations/*.{webp,jpg,jpeg,png,gif,avif}',
+  {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }
+);
+
+const illustrations = Object.entries(modules)
+  .map(([path, url]) => {
+    const filename = path.split('/').pop() ?? '';
+
+    const match = filename.match(
+      /^([a-z0-9]+)_(\d{4})(\d{2})(\d{2})_(\d{2})_(fanart|commission)_(mokomo|mokoko|both)\.(webp|jpg|jpeg|png|gif|avif)$/i
+    );
+
+    if (!match) return null;
+
+    const [
+      ,
+      artistId,
+      year,
+      month,
+      day,
+      number,
+      type,
+      character,
+    ] = match;
+
+    const artist = artists[artistId as keyof typeof artists];
+
+    return {
+      filename,
+      url,
+      artistId,
+      artist,
+      year: Number(year),
+      month: Number(month),
+      day: Number(day),
+      number: Number(number),
+      type: type.toLowerCase(),
+      character: character.toLowerCase(),
+      dateValue: Number(`${year}${month}${day}${number}`),
+    };
+  })
+  .filter((item) => item !== null)
+  .sort((a, b) => b.dateValue - a.dateValue);
 ---
 
 <BaseLayout title="Illustrations | Mokomo Games">
   <h1>Illustrations</h1>
-  <p>ファンアートなどのイラストを掲載します。</p>
+
+  <div class="filters">
+    <div class="filter-group">
+      <span class="filter-label">種類</span>
+
+      <div class="filter-buttons">
+        <button
+          type="button"
+          class="filter-button is-active"
+          data-filter-type="all"
+        >
+          All
+        </button>
+
+        <button
+          type="button"
+          class="filter-button"
+          data-filter-type="fanart"
+        >
+          Fanart
+        </button>
+
+        <button
+          type="button"
+          class="filter-button"
+          data-filter-type="commission"
+        >
+          Commission
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">キャラクター</span>
+
+      <div class="filter-buttons">
+        <button
+          type="button"
+          class="filter-button is-active"
+          data-filter-character="all"
+        >
+          All
+        </button>
+
+        <button
+          type="button"
+          class="filter-button"
+          data-filter-character="mokomo"
+        >
+          Mokomo
+        </button>
+
+        <button
+          type="button"
+          class="filter-button"
+          data-filter-character="mokoko"
+        >
+          Mokoko
+        </button>
+      </div>
+    </div>
+
+    <div class="artist-filter" hidden>
+      <span>
+        作者：
+        <strong class="artist-filter-name"></strong>
+        さん
+      </span>
+
+      <button
+        type="button"
+        class="artist-filter-clear"
+      >
+        作者の絞り込みを解除
+      </button>
+    </div>
+  </div>
+
+  <p class="no-results" hidden>
+    条件に一致するイラストはありません。
+  </p>
+
+  <div class="illustration-grid">
+    {illustrations.map((illustration) => (
+      <article
+        class="illustration-item"
+        data-type={illustration.type}
+        data-character={illustration.character}
+        data-artist={illustration.artistId}
+      >
+        <img
+          class="illustration-image"
+          src={illustration.url}
+          data-full={illustration.url}
+          alt={
+            illustration.artist
+              ? `${illustration.artist.name}さんのイラスト`
+              : 'イラスト'
+          }
+          loading="lazy"
+          tabindex="0"
+        />
+
+        <div class="illustration-info">
+          {illustration.artist ? (
+            <>
+              <a
+                class="artist-link"
+                href={illustration.artist.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {illustration.artist.name}さん
+              </a>
+
+              <button
+                type="button"
+                class="artist-filter-button"
+                data-artist-id={illustration.artistId}
+                data-artist-name={illustration.artist.name}
+              >
+                作品を見る
+              </button>
+            </>
+          ) : (
+            <span>{illustration.artistId}</span>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <div
+    id="lightbox"
+    class="lightbox"
+    aria-hidden="true"
+  >
+    <button
+      class="lightbox-close"
+      type="button"
+      aria-label="閉じる"
+    >
+      ×
+    </button>
+
+    <button
+      class="lightbox-prev"
+      type="button"
+      aria-label="前の画像"
+    >
+      ‹
+    </button>
+
+    <img
+      class="lightbox-image"
+      src=""
+      alt=""
+    />
+
+    <button
+      class="lightbox-next"
+      type="button"
+      aria-label="次の画像"
+    >
+      ›
+    </button>
+  </div>
+
+  <script>
+    const items = Array.from(
+      document.querySelectorAll<HTMLElement>('.illustration-item')
+    );
+
+    const typeButtons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>('[data-filter-type]')
+    );
+
+    const characterButtons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(
+        '[data-filter-character]'
+      )
+    );
+
+    const artistButtons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(
+        '.artist-filter-button'
+      )
+    );
+
+    const artistFilter =
+      document.querySelector<HTMLElement>('.artist-filter');
+
+    const artistFilterName =
+      document.querySelector<HTMLElement>('.artist-filter-name');
+
+    const artistFilterClear =
+      document.querySelector<HTMLButtonElement>(
+        '.artist-filter-clear'
+      );
+
+    const noResults =
+      document.querySelector<HTMLElement>('.no-results');
+
+    const lightbox =
+      document.querySelector<HTMLElement>('#lightbox');
+
+    const lightboxImage =
+      document.querySelector<HTMLImageElement>('.lightbox-image');
+
+    const closeButton =
+      document.querySelector<HTMLButtonElement>('.lightbox-close');
+
+    const prevButton =
+      document.querySelector<HTMLButtonElement>('.lightbox-prev');
+
+    const nextButton =
+      document.querySelector<HTMLButtonElement>('.lightbox-next');
+
+    let selectedType = 'all';
+    let selectedCharacter = 'all';
+    let selectedArtist = 'all';
+
+    let visibleImages: HTMLImageElement[] = [];
+    let currentIndex = 0;
+
+    function updateVisibleImages() {
+      visibleImages = items
+        .filter((item) => !item.hidden)
+        .map((item) =>
+          item.querySelector<HTMLImageElement>('.illustration-image')
+        )
+        .filter(
+          (image): image is HTMLImageElement =>
+            image !== null
+        );
+    }
+
+    function updateItems() {
+      let visibleCount = 0;
+
+      items.forEach((item) => {
+        const type = item.dataset.type;
+        const character = item.dataset.character;
+        const artist = item.dataset.artist;
+
+        const matchesType =
+          selectedType === 'all' ||
+          type === selectedType;
+
+        const matchesCharacter =
+          selectedCharacter === 'all' ||
+          character === selectedCharacter ||
+          character === 'both';
+
+        const matchesArtist =
+          selectedArtist === 'all' ||
+          artist === selectedArtist;
+
+        const shouldShow =
+          matchesType &&
+          matchesCharacter &&
+          matchesArtist;
+
+        item.hidden = !shouldShow;
+
+        if (shouldShow) {
+          visibleCount += 1;
+        }
+      });
+
+      if (noResults) {
+        noResults.hidden = visibleCount !== 0;
+      }
+
+      updateVisibleImages();
+    }
+
+    function showImage(index: number) {
+      if (
+        !lightbox ||
+        !lightboxImage ||
+        visibleImages.length === 0
+      ) {
+        return;
+      }
+
+      if (index < 0) {
+        index = visibleImages.length - 1;
+      }
+
+      if (index >= visibleImages.length) {
+        index = 0;
+      }
+
+      currentIndex = index;
+
+      const image = visibleImages[currentIndex];
+      const fullSrc = image.getAttribute('data-full');
+
+      if (!fullSrc) return;
+
+      lightboxImage.setAttribute('src', fullSrc);
+      lightboxImage.setAttribute(
+        'alt',
+        image.getAttribute('alt') ?? ''
+      );
+
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-open');
+    }
+
+    function openImage(image: HTMLImageElement) {
+      updateVisibleImages();
+
+      const index = visibleImages.indexOf(image);
+
+      if (index === -1) return;
+
+      showImage(index);
+    }
+
+    function closeLightbox() {
+      if (!lightbox || !lightboxImage) return;
+
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lightboxImage.setAttribute('src', '');
+      lightboxImage.setAttribute('alt', '');
+      document.body.classList.remove('lightbox-open');
+    }
+
+    function showPrevious() {
+      showImage(currentIndex - 1);
+    }
+
+    function showNext() {
+      showImage(currentIndex + 1);
+    }
+
+    typeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedType =
+          button.dataset.filterType ?? 'all';
+
+        typeButtons.forEach((otherButton) => {
+          otherButton.classList.remove('is-active');
+        });
+
+        button.classList.add('is-active');
+
+        updateItems();
+      });
+    });
+
+    characterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedCharacter =
+          button.dataset.filterCharacter ?? 'all';
+
+        characterButtons.forEach((otherButton) => {
+          otherButton.classList.remove('is-active');
+        });
+
+        button.classList.add('is-active');
+
+        updateItems();
+      });
+    });
+
+    artistButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedArtist =
+          button.dataset.artistId ?? 'all';
+
+        const artistName =
+          button.dataset.artistName ?? '';
+
+        if (artistFilterName) {
+          artistFilterName.textContent = artistName;
+        }
+
+        if (artistFilter) {
+          artistFilter.hidden = false;
+        }
+
+        updateItems();
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    artistFilterClear?.addEventListener(
+      'click',
+      () => {
+        selectedArtist = 'all';
+
+        if (artistFilter) {
+          artistFilter.hidden = true;
+        }
+
+        updateItems();
+      }
+    );
+
+    const illustrationImages = Array.from(
+      document.querySelectorAll<HTMLImageElement>(
+        '.illustration-image'
+      )
+    );
+
+    illustrationImages.forEach((image) => {
+      image.addEventListener('click', () => {
+        openImage(image);
+      });
+
+      image.addEventListener('keydown', (event) => {
+        if (
+          event.key === 'Enter' ||
+          event.key === ' '
+        ) {
+          event.preventDefault();
+          openImage(image);
+        }
+      });
+    });
+
+    closeButton?.addEventListener(
+      'click',
+      closeLightbox
+    );
+
+    prevButton?.addEventListener(
+      'click',
+      showPrevious
+    );
+
+    nextButton?.addEventListener(
+      'click',
+      showNext
+    );
+
+    lightbox?.addEventListener('click', (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!lightbox?.classList.contains('is-open')) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+
+      if (event.key === 'ArrowLeft') {
+        showPrevious();
+      }
+
+      if (event.key === 'ArrowRight') {
+        showNext();
+      }
+    });
+
+    updateVisibleImages();
+  </script>
 </BaseLayout>
+
+<style>
+  .filters {
+    display: grid;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #f8f8f8;
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    min-width: 7rem;
+    font-weight: 700;
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-button,
+  .artist-filter-button,
+  .artist-filter-clear {
+    border: 1px solid #bbb;
+    border-radius: 999px;
+    background: white;
+    padding: 0.45rem 0.9rem;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .filter-button:hover,
+  .artist-filter-button:hover,
+  .artist-filter-clear:hover {
+    background: #eee;
+  }
+
+  .filter-button.is-active {
+    background: #222;
+    border-color: #222;
+    color: white;
+  }
+
+  .artist-filter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+  }
+
+  .artist-filter[hidden] {
+    display: none;
+  }
+
+  .no-results {
+    max-width: 1400px;
+    margin: 2rem auto;
+    text-align: center;
+  }
+
+  .illustration-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .illustration-item {
+    min-width: 0;
+  }
+
+  .illustration-item[hidden] {
+    display: none;
+  }
+
+  .illustration-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    cursor: zoom-in;
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .illustration-image:hover {
+    transform: scale(1.015);
+    opacity: 0.9;
+  }
+
+  .illustration-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+  }
+
+  .artist-link {
+    color: inherit;
+  }
+
+  .artist-filter-button {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.85rem;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.88);
+    padding: 3rem 5rem;
+  }
+
+  .lightbox.is-open {
+    display: flex;
+  }
+
+  .lightbox-image {
+    display: block;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .lightbox button {
+    position: fixed;
+    z-index: 1001;
+    border: 0;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .lightbox button:hover {
+    opacity: 1;
+  }
+
+  .lightbox-close {
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 3rem;
+  }
+
+  .lightbox-close:hover {
+    transform: scale(1.1);
+  }
+
+  .lightbox-prev {
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 5rem;
+  }
+
+  .lightbox-prev:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .lightbox-next {
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 5rem;
+  }
+
+  .lightbox-next:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  :global(body.lightbox-open) {
+    overflow: hidden;
+  }
+
+  @media (max-width: 700px) {
+    .filter-group {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      min-width: 0;
+    }
+
+    .illustration-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .illustration-image {
+      border-radius: 8px;
+    }
+
+    .lightbox {
+      padding: 3rem 2.5rem;
+    }
+
+    .lightbox-image {
+      max-width: 94vw;
+      max-height: 88vh;
+    }
+
+    .lightbox-close {
+      top: 0.75rem;
+      right: 1rem;
+      font-size: 2.5rem;
+    }
+
+    .lightbox-prev {
+      left: 0.25rem;
+      font-size: 3.5rem;
+    }
+
+    .lightbox-next {
+      right: 0.25rem;
+      font-size: 3.5rem;
+    }
+  }
+</style>
