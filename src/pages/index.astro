@@ -1,11 +1,557 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+/*
+ * Scheduleページと同じルールで
+ * public/images/schedule 内のWebP画像を取得
+ */
+const scheduleModules = import.meta.glob(
+  '/public/images/schedule/*.webp',
+  {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }
+);
+
+/*
+ * schedule_YYYYMMDD.webp から日付を取得し、
+ * 新しい順に並べる
+ */
+const schedules = Object.entries(scheduleModules)
+  .map(([path, url]) => {
+    const filename = path.split('/').pop() ?? '';
+
+    const match = filename.match(
+      /^schedule_(\d{4})(\d{2})(\d{2})\.webp$/
+    );
+
+    if (!match) return null;
+
+    const [, year, month, day] = match;
+
+    return {
+      filename,
+      url,
+      dateValue: Number(`${year}${month}${day}`),
+      dateLabel: `${year}-${month}-${day}`,
+    };
+  })
+  .filter((item) => item !== null)
+  .sort((a, b) => b.dateValue - a.dateValue);
+
+/*
+ * Homeには最新2件だけ表示
+ */
+const latestSchedules = schedules.slice(0, 2);
+
+const contents = [
+  {
+    title: 'References',
+    description: '三面図などの資料を掲載しています！',
+    href: '/references/',
+  },
+  {
+    title: 'Illustrations',
+    description:
+      '頂いたファンアートやコミッションイラスト等をこちらでご紹介しています！',
+    href: '/illustrations/',
+  },
+  {
+    title: 'Archives',
+    description:
+      'YouTubeの配信アーカイブ、その他動画へのリンクです！ゲームタイトルで検索できます！',
+    href: '/archives/',
+  },
+  {
+    title: 'Works',
+    description:
+      '出演させていただいたゲーム作品等をこちらでご紹介しています！',
+    href: '/works/',
+  },
+];
+
+const stores = [
+  {
+    title: 'BOOTH',
+    description: 'こちらでもこものグッズ販売をしています！',
+    href: 'https://shippomokomo.booth.pm/',
+  },
+  {
+    title: 'LINE Stickers',
+    description:
+      'もこも＆もここのLINEスタンプを公開しています！',
+    href: 'https://store.line.me/stickershop/product/30400033/',
+  },
+];
+
+const links = [
+  {
+    title: 'YouTube',
+    href: 'https://www.youtube.com/@mokomo',
+  },
+  {
+    title: 'X',
+    href: 'https://x.com/shippomokomo',
+  },
+  {
+    title: 'Bluesky',
+    href: 'https://bsky.app/profile/shippomokomo.bsky.social',
+  },
+  {
+    title: 'Instagram',
+    href: 'https://www.instagram.com/shippomokomo/',
+  },
+  {
+    title: 'VRoid Hub',
+    href: 'https://hub.vroid.com/users/78987251',
+  },
+  {
+    title: 'Amazon Wishlist',
+    href: 'https://www.amazon.jp/hz/wishlist/ls/CF4UZ9QV6S35?ref_=wl_share',
+  },
+];
+
+const contactUrl =
+  'https://docs.google.com/forms/d/e/1FAIpQLSfYv8hTEEF-RUeLCQTIECUldygrhvK21UBx7l3mQHLPyE2OyQ/viewform?usp=dialog';
 ---
 
 <BaseLayout title="Mokomo Games">
-  <h1>Mokomo Games</h1>
+  <main class="home-page">
 
-  <p>
-    自己紹介や各ページの案内、お問い合わせ先などを掲載する予定です。
-  </p>
+    <!-- メインビジュアル -->
+    <section class="hero">
+      <div class="hero-image">
+        <img
+          src="/images/home/main-visual.webp"
+          alt="七宝もこも / Shippo Mokomo"
+        />
+      </div>
+
+      <div class="hero-content">
+        <h1>
+          <span class="name-ja">七宝もこも</span>
+          <span class="name-en">Shippo Mokomo</span>
+        </h1>
+
+        <div class="hero-description">
+          <p>
+            インディーゲー＆雑談好きの、パズル＆英語つよつよタヌキです！<br />
+            趣味でライブ配信をしています！
+          </p>
+
+          <p lang="en">
+            Mokomo, the most joyful and nerdy indie game streamer!
+          </p>
+        </div>
+
+        <div class="hero-links">
+          <a
+            href="https://www.youtube.com/@mokomo"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            YouTube
+          </a>
+
+          <a
+            href="https://x.com/shippomokomo"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            X
+          </a>
+
+          <a
+            href="https://bsky.app/profile/shippomokomo.bsky.social"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Bluesky
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Latest Schedule -->
+    <section class="home-section">
+      <h2>Latest Schedule</h2>
+
+      {
+        latestSchedules.length > 0 ? (
+          <>
+            <div class="schedule-grid">
+              {latestSchedules.map((schedule) => (
+                <a
+                  class="schedule-card"
+                  href="/schedule/"
+                  aria-label={`${schedule.dateLabel} のスケジュールを見る`}
+                >
+                  <img
+                    src={schedule.url}
+                    alt={`${schedule.dateLabel} の配信スケジュール`}
+                    loading="lazy"
+                  />
+                </a>
+              ))}
+            </div>
+
+            <div class="section-link">
+              <a href="/schedule/">
+                過去のスケジュールを見る
+              </a>
+            </div>
+          </>
+        ) : (
+          <p>現在掲載中のスケジュールはありません。</p>
+        )
+      }
+    </section>
+
+    <!-- Contents -->
+    <section class="home-section">
+      <h2>Contents</h2>
+
+      <div class="card-grid">
+        {
+          contents.map((item) => (
+            <a class="info-card" href={item.href}>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+              <span class="card-arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Stores -->
+    <section class="home-section">
+      <h2>Stores</h2>
+
+      <div class="card-grid store-grid">
+        {
+          stores.map((store) => (
+            <a
+              class="info-card"
+              href={store.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <h3>{store.title}</h3>
+              <p>{store.description}</p>
+              <span class="card-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Links -->
+    <section class="home-section">
+      <h2>Links</h2>
+
+      <div class="link-list">
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {link.title}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="home-section contact-section">
+      <h2>Contact</h2>
+
+      <p>
+        ご連絡・お問い合わせはこちらからお願いいたします。
+      </p>
+
+      <p lang="en">
+        For inquiries, please use the contact form below.
+      </p>
+
+      <a
+        class="contact-button"
+        href={contactUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        お問い合わせ / Contact
+      </a>
+    </section>
+
+  </main>
 </BaseLayout>
+
+<style>
+  .home-page {
+    width: min(100%, 1100px);
+    margin: 0 auto;
+  }
+
+  /*
+   * メインビジュアル
+   */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr minmax(280px, 430px);
+    gap: 3rem;
+    align-items: center;
+    min-height: 620px;
+    padding: 2rem 0 4rem;
+  }
+
+  /*
+   * PCでは
+   * 左：テキスト
+   * 右：メインビジュアル
+   */
+  .hero-image {
+    order: 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .hero-image img {
+    display: block;
+    width: 100%;
+    max-width: 430px;
+    max-height: 600px;
+    object-fit: contain;
+  }
+
+  .hero-content {
+    order: 1;
+    min-width: 0;
+  }
+
+  .hero-content h1 {
+    margin: 0 0 1.5rem;
+    line-height: 1.15;
+  }
+
+  .name-ja,
+  .name-en {
+    display: block;
+  }
+
+  .name-ja {
+    font-size: clamp(2.3rem, 5vw, 4rem);
+  }
+
+  .name-en {
+    margin-top: 0.5rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+    font-weight: 500;
+  }
+
+  .hero-description {
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .hero-description p {
+    margin: 0 0 0.75rem;
+  }
+
+  .hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .hero-links a,
+  .link-list a,
+  .contact-button,
+  .section-link a {
+    display: inline-block;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .hero-links a:hover,
+  .link-list a:hover,
+  .contact-button:hover,
+  .section-link a:hover {
+    text-decoration: underline;
+  }
+
+  /*
+   * 各セクション共通
+   */
+  .home-section {
+    margin: 0 0 5rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .home-section h2 {
+    margin: 0 0 1.5rem;
+    font-size: 2rem;
+  }
+
+  /*
+   * Latest Schedule
+   */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .schedule-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .schedule-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .schedule-card:hover img {
+    transform: scale(1.01);
+    opacity: 0.92;
+  }
+
+  .section-link {
+    margin-top: 1.25rem;
+    text-align: center;
+  }
+
+  /*
+   * Contents / Stores
+   */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .info-card {
+    position: relative;
+    display: block;
+    min-height: 150px;
+    padding: 1.5rem 3.5rem 1.5rem 1.5rem;
+    border: 1px solid #d5d5d5;
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    background: #fff;
+  }
+
+  .info-card:hover {
+    border-color: #999;
+  }
+
+  .info-card h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.2rem;
+  }
+
+  .info-card p {
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  .card-arrow {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  /*
+   * Links
+   */
+  .link-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /*
+   * Contact
+   */
+  .contact-section p {
+    margin: 0 0 0.5rem;
+    line-height: 1.8;
+  }
+
+  .contact-button {
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+
+  /*
+   * スマートフォン
+   *
+   * 画像を上、
+   * テキストを下に戻す
+   */
+  @media (max-width: 700px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      min-height: 0;
+      padding: 1.5rem 0 3.5rem;
+    }
+
+    .hero-image {
+      order: 1;
+    }
+
+    .hero-content {
+      order: 2;
+      text-align: center;
+    }
+
+    .hero-image img {
+      max-width: 320px;
+      max-height: 480px;
+    }
+
+    .hero-links {
+      justify-content: center;
+    }
+
+    .home-section {
+      margin-bottom: 4rem;
+    }
+
+    .home-section h2 {
+      font-size: 1.7rem;
+    }
+
+    .schedule-grid,
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .link-list {
+      justify-content: flex-start;
+    }
+  }
+</style>
