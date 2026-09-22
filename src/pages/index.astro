@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { withBase } from '../utils/paths';
-import { artists } from '../data/artists';
 
 /*
  * Scheduleページと同じルールで
@@ -123,18 +122,12 @@ const contactUrl =
 
     <!-- メインビジュアル -->
     <section class="hero">
-      <figure class="hero-image">
+      <div class="hero-image">
         <img
           src={withBase('/images/home/main-visual.webp')}
           alt="七宝もこも / Shippo Mokomo"
         />
-        <figcaption>
-          Design &amp; Illustration:
-          <a href={artists.kikuri.url} target="_blank" rel="noopener noreferrer">
-            {artists.kikuri.name}さん
-          </a>
-        </figcaption>
-      </figure>
+      </div>
 
       <div class="hero-content">
         <h1>
@@ -536,10 +529,8 @@ const contactUrl =
     order: 2;
 
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    margin: 0;
+    align-items: flex-end;
   }
 
   .hero-image img {
@@ -550,18 +541,6 @@ const contactUrl =
     max-height: 600px;
 
     object-fit: contain;
-  }
-
-  .hero-image figcaption {
-    margin-top: 0.65rem;
-    color: var(--color-text-soft);
-    font-size: 0.85rem;
-    text-align: center;
-  }
-
-  .hero-image figcaption a {
-    color: var(--color-green-dark);
-    font-weight: 600;
   }
 
   .hero-content {
