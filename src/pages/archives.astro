@@ -453,11 +453,11 @@ const initialIndexRows = [
               {row.map((group) => (
                 group.games.length > 0 ? (
                   <a href={`#group-${group.name}`}>
-                    {group.name}
+                    {group.name === 'その他' ? '他' : group.name}
                   </a>
                 ) : (
                   <span class="initial-index-unavailable" aria-disabled="true">
-                    {group.name}
+                    {group.name === 'その他' ? '他' : group.name}
                   </span>
                 )
               ))}
