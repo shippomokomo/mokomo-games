@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
 import { workSections } from '../data/works';
 ---
 
@@ -30,7 +31,7 @@ import { workSections } from '../data/works';
                 <summary>
                   <div class="work-summary">
                     <img
-                      src={`/images/works/${work.image}`}
+                      src={withBase(`/images/works/${work.image}`)}
                       alt=""
                       loading="lazy"
                     />

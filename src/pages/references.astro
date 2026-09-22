@@ -1,16 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
 import { artists } from '../data/artists';
 
 const references = {
   keyArt: {
-    src: '/images/references/key-art_2026.webp',
+    src: withBase('/images/references/key-art_2026.webp'),
     alt: 'Mokomo Key Art',
     artist: artists.kikuri,
   },
 
   current: {
-    src: '/images/references/reference-sheet_2025.webp',
+    src: withBase('/images/references/reference-sheet_2025.webp'),
     alt: 'Mokomo Reference Sheet September 2025 to Current',
     artist: artists.kikuri,
   },
@@ -18,13 +19,13 @@ const references = {
   past: [
     {
       period: '2021 to September 2025',
-      src: '/images/references/reference-sheet_2021.webp',
+      src: withBase('/images/references/reference-sheet_2021.webp'),
       alt: 'Mokomo Reference Sheet 2021 to September 2025',
       artist: artists.minmi,
     },
     {
       period: '2022 to September 2025',
-      src: '/images/references/reference-sheet_2022.webp',
+      src: withBase('/images/references/reference-sheet_2022.webp'),
       alt: 'Mokomo Reference Sheet 2022 to September 2025',
       artist: artists.minmi,
     },

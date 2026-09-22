@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
 import { artists } from '../data/artists';
 import { readdirSync } from 'node:fs';
 
@@ -32,7 +33,7 @@ const illustrations = mediaFiles
 
     return {
       filename,
-      url: `/images/illustrations/${encodeURIComponent(filename)}`,
+      url: withBase(`/images/illustrations/${encodeURIComponent(filename)}`),
       artistId,
       artist,
       year: Number(year),

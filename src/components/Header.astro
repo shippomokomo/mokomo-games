@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../utils/paths';
+
 const currentPath = Astro.url.pathname;
 
 const navigation = [
@@ -33,17 +35,17 @@ const contactUrl =
 
 function isCurrentPage(href: string) {
   if (href === '/') {
-    return currentPath === '/';
+    return currentPath === withBase('/');
   }
 
-  return currentPath.startsWith(href);
+  return currentPath.startsWith(withBase(href));
 }
 ---
 
 <header class="site-header">
   <a
     class="site-title"
-    href="/"
+    href={withBase('/')}
     aria-label="Mokomo Games Home"
   >
     Mokomo Games
@@ -56,7 +58,7 @@ function isCurrentPage(href: string) {
     {
       navigation.map((item) => (
         <a
-          href={item.href}
+          href={withBase(item.href)}
           class:list={{
             'nav-link': true,
             'is-current': isCurrentPage(item.href),

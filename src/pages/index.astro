@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
 
 /*
  * Scheduleページと同じルールで
@@ -32,7 +33,7 @@ const schedules = Object.entries(scheduleModules)
 
     return {
       filename,
-      url,
+      url: withBase(`/images/schedule/${filename}`),
       dateValue: Number(`${year}${month}${day}`),
       dateLabel: `${year}-${month}-${day}`,
     };
@@ -123,7 +124,7 @@ const contactUrl =
     <section class="hero">
       <div class="hero-image">
         <img
-          src="/images/home/main-visual.webp"
+          src={withBase('/images/home/main-visual.webp')}
           alt="七宝もこも / Shippo Mokomo"
         />
       </div>
@@ -201,7 +202,7 @@ const contactUrl =
             </div>
 
             <div class="section-link">
-              <a href="/schedule/">
+              <a href={withBase('/schedule/')}>
                 過去のスケジュールを見る
               </a>
             </div>
@@ -219,7 +220,7 @@ const contactUrl =
       <div class="card-grid">
         {
           contents.map((item) => (
-            <a class="info-card" href={item.href}>
+            <a class="info-card" href={withBase(item.href)}>
               <h3>{item.title}</h3>
               <p>{item.description}</p>
 

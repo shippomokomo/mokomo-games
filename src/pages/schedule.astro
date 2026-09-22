@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
 
 const modules = import.meta.glob('/public/images/schedule/*.webp', {
   eager: true,
@@ -21,7 +22,7 @@ const schedules = Object.entries(modules)
 
     return {
       filename,
-      url,
+      url: withBase(`/images/schedule/${filename}`),
       year: Number(year),
       month: Number(month),
       day: Number(day),
