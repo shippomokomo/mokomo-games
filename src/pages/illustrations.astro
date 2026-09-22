@@ -114,6 +114,17 @@ const illustrations = mediaFiles
       </div>
     </div>
 
+    <div class="filter-group">
+      <label class="filter-label" for="artist-search">作者を検索</label>
+      <input
+        id="artist-search"
+        class="artist-search"
+        type="search"
+        placeholder="例：きくり"
+        autocomplete="off"
+      />
+    </div>
+
     <div class="artist-filter" hidden>
       <span>
         作者：
@@ -143,6 +154,7 @@ const illustrations = mediaFiles
         data-type={illustration.type}
         data-character={illustration.character}
         data-artist={illustration.artistId}
+        data-artist-name={illustration.artist?.name ?? illustration.artistId}
       >
         <div class="illustration-media">
           {illustration.isVideo ? (
@@ -249,6 +261,9 @@ const illustrations = mediaFiles
       )
     );
 
+    const artistSearch =
+      document.querySelector<HTMLInputElement>('#artist-search');
+
     const artistFilter =
       document.querySelector<HTMLElement>('.artist-filter');
 
@@ -287,6 +302,7 @@ const illustrations = mediaFiles
     let selectedType = 'all';
     let selectedCharacter = 'all';
     let selectedArtist = 'all';
+    let artistQuery = '';
 
     type GalleryMedia = HTMLImageElement | HTMLVideoElement;
     let visibleImages: GalleryMedia[] = [];
@@ -325,10 +341,16 @@ const illustrations = mediaFiles
           selectedArtist === 'all' ||
           artist === selectedArtist;
 
+        const matchesArtistQuery =
+          (item.dataset.artistName ?? '')
+            .toLocaleLowerCase()
+            .includes(artistQuery);
+
         const shouldShow =
           matchesType &&
           matchesCharacter &&
-          matchesArtist;
+          matchesArtist &&
+          matchesArtistQuery;
 
         item.hidden = !shouldShow;
 
@@ -458,10 +480,19 @@ const illustrations = mediaFiles
       });
     });
 
+    artistSearch?.addEventListener('input', () => {
+      artistQuery = artistSearch.value.trim().toLocaleLowerCase();
+      selectedArtist = 'all';
+      if (artistFilter) artistFilter.hidden = true;
+      updateItems();
+    });
+
     artistButtons.forEach((button) => {
       button.addEventListener('click', () => {
         selectedArtist =
           button.dataset.artistId ?? 'all';
+        artistQuery = '';
+        if (artistSearch) artistSearch.value = '';
 
         const artistName =
           button.dataset.artistName ?? '';
@@ -626,6 +657,21 @@ const illustrations = mediaFiles
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+  }
+
+  .artist-search {
+    width: min(100%, 20rem);
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .artist-search:focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
   }
 
   /*

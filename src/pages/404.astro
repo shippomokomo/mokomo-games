@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
+---
+
+<BaseLayout title="ページが見つかりません | Mokomo Games">
+  <section class="not-found" aria-labelledby="not-found-title">
+    <p class="error-code">404</p>
+    <h1 id="not-found-title">ページが見つかりません</h1>
+    <p>URLが変わったか、ページが削除された可能性があります。</p>
+    <a class="home-link" href={withBase('/')}>Homeに戻る</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: 42rem;
+    margin: 4rem auto 6rem;
+    text-align: center;
+  }
+
+  .error-code {
+    margin: 0;
+    color: var(--color-green-dark);
+    font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+    font-size: clamp(4rem, 12vw, 7rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  h1 {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .not-found > p:not(.error-code) {
+    color: var(--color-text-soft);
+  }
+
+  .home-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.25rem;
+    border: 1px solid var(--color-green);
+    border-radius: 999px;
+    color: var(--color-green-dark);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .home-link:hover {
+    background: var(--color-green-soft);
+  }
+</style>
