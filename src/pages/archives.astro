@@ -359,7 +359,7 @@ const sortedGames = [...games].sort((a, b) =>
  *
  * 0件のグループは表示しません。
  */
-const groups = [
+const allGroups = [
   ...alphabetGroups,
   '0-9',
   ...japaneseGroups,
@@ -370,13 +370,16 @@ const groups = [
     games: sortedGames.filter(
       (game) => getGroup(game) === name
     ),
-  }))
-  .filter((group) => group.games.length > 0);
+  }));
+
+const groups = allGroups.filter(
+  (group) => group.games.length > 0
+);
 
 const initialIndexRows = [
-  groups.filter((group) => alphabetGroups.indexOf(group.name) >= 0 && alphabetGroups.indexOf(group.name) < 13),
-  groups.filter((group) => alphabetGroups.indexOf(group.name) >= 13),
-  groups.filter((group) => !alphabetGroups.includes(group.name)),
+  allGroups.filter((group) => alphabetGroups.indexOf(group.name) >= 0 && alphabetGroups.indexOf(group.name) < 13),
+  allGroups.filter((group) => alphabetGroups.indexOf(group.name) >= 13),
+  allGroups.filter((group) => !alphabetGroups.includes(group.name)),
 ];
 ---
 
@@ -448,9 +451,15 @@ const initialIndexRows = [
           {initialIndexRows.map((row) => (
             <div class="initial-index-links">
               {row.map((group) => (
-                <a href={`#group-${group.name}`}>
-                  {group.name}
-                </a>
+                group.games.length > 0 ? (
+                  <a href={`#group-${group.name}`}>
+                    {group.name}
+                  </a>
+                ) : (
+                  <span class="initial-index-unavailable" aria-disabled="true">
+                    {group.name}
+                  </span>
+                )
               ))}
             </div>
           ))}
@@ -861,13 +870,15 @@ const initialIndexRows = [
     gap: 0.45rem;
   }
 
-  .initial-index-links a {
+  .initial-index-links a,
+  .initial-index-links span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    min-width: 2.4rem;
+    width: 3rem;
     min-height: 2.4rem;
+    box-sizing: border-box;
 
     padding: 0.35rem 0.6rem;
 
@@ -886,6 +897,11 @@ const initialIndexRows = [
       background-color 0.15s ease,
       border-color 0.15s ease,
       color 0.15s ease;
+  }
+
+  .initial-index-unavailable {
+    opacity: 0.4;
+    cursor: default;
   }
 
   .initial-index-links a:hover {

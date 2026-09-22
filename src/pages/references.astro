@@ -60,6 +60,7 @@ const references = {
         </div>
 
         <div class="artist-info">
+          <span class="artist-credit-label">Design &amp; Illustration:</span>
           <a
             href={references.keyArt.artist.url}
             target="_blank"
@@ -90,6 +91,7 @@ const references = {
           </div>
 
           <div class="artist-info">
+            <span class="artist-credit-label">Design &amp; Illustration:</span>
             <a
               href={references.current.artist.url}
               target="_blank"
@@ -120,6 +122,7 @@ const references = {
             </div>
 
             <div class="artist-info">
+              <span class="artist-credit-label">Design &amp; Illustration:</span>
               <a
                 href={reference.artist.url}
                 target="_blank"
@@ -466,8 +469,15 @@ const references = {
   .artist-info {
     display: flex;
     justify-content: center;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-wrap: wrap;
 
     margin-top: 0.85rem;
+  }
+
+  .artist-credit-label {
+    color: var(--color-text-soft);
   }
 
   .artist-info a {
