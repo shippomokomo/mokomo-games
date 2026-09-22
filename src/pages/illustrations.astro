@@ -1,19 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { artists } from '../data/artists';
+import { readdirSync } from 'node:fs';
 
-const modules = import.meta.glob(
-  '/public/images/illustrations/*.{webp,jpg,jpeg,png,gif,avif,mp4}',
-  {
-    eager: true,
-    query: '?url',
-    import: 'default',
-  }
+const mediaFiles = readdirSync('public/images/illustrations').filter((filename) =>
+  /\.(webp|jpe?g|png|gif|avif|mp4)$/i.test(filename)
 );
 
-const illustrations = Object.entries(modules)
-  .map(([path, url]) => {
-    const filename = path.split('/').pop() ?? '';
+const illustrations = mediaFiles
+  .map((filename) => {
 
     const match = filename.match(
       /^([a-z0-9]+)_(\d{4})(\d{2})(\d{2})_(\d{2})_(fanart|commission)_(mokomo|mokoko|both)\.(webp|jpg|jpeg|png|gif|avif|mp4)$/i
@@ -37,7 +32,7 @@ const illustrations = Object.entries(modules)
 
     return {
       filename,
-      url,
+      url: `/images/illustrations/${encodeURIComponent(filename)}`,
       artistId,
       artist,
       year: Number(year),
