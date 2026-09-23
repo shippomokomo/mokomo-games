@@ -1,5 +1,6 @@
 ---
 import Header from '../components/Header.astro';
+import { withBase } from '../utils/paths';
 
 const { title = 'Mokomo Games' } = Astro.props;
 ---
@@ -15,6 +16,17 @@ const { title = 'Mokomo Games' } = Astro.props;
     />
 
     <title>{title}</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="200x200"
+      href={withBase('/favicon.png')}
+    />
+    <link
+      rel="apple-touch-icon"
+      href={withBase('/favicon.png')}
+    />
 
     <!-- Google Fonts -->
     <link
