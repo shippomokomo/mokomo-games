@@ -106,7 +106,7 @@ const slideshowItems = readdirSync('public/images/illustrations')
           image.onload = () => resolve(true);
           image.onerror = () => resolve(false);
           artistName.textContent = item.artistName
-            ? `Illustration: ${item.artistName}さん`
+            ? `${item.artistName}さん`
             : '';
           image.src = item.url;
         });
@@ -198,7 +198,7 @@ const slideshowItems = readdirSync('public/images/illustrations')
     padding: 0 20px;
     color: #fff;
     font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     line-height: 1.3;
     text-align: center;
