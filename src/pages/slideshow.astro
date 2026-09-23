@@ -33,6 +33,15 @@ const imageUrls = readdirSync('public/images/illustrations')
       const duration = Number.isFinite(requestedDuration)
         ? Math.max(1000, requestedDuration)
         : 4000;
+      const requestedFade = Number(params.get('fade'));
+      const fadeDuration = Number.isFinite(requestedFade)
+        ? Math.max(0, Math.min(requestedFade, duration))
+        : Math.min(1500, duration);
+
+      document.documentElement.style.setProperty(
+        '--fade-duration',
+        `${fadeDuration}ms`
+      );
 
       let queue = [];
       let activeSlide = 0;
@@ -133,7 +142,7 @@ const imageUrls = readdirSync('public/images/illustrations')
     height: 100%;
     object-fit: contain;
     opacity: 0;
-    transition: opacity 500ms ease;
+    transition: opacity var(--fade-duration, 1500ms) ease;
   }
 
   .slide.is-visible {
