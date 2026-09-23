@@ -280,7 +280,7 @@ export const artists = {
   },
 
   mondoro: {
-    name: '甲乃もんどろうさん',
+    name: '甲乃もんどろう',
     url: 'https://www.pixiv.net/users/18427817',
   },
 
