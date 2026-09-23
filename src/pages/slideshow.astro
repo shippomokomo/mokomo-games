@@ -1,13 +1,20 @@
 ---
 import { readdirSync } from 'node:fs';
 import { withBase } from '../utils/paths';
+import { artists } from '../data/artists';
 
-const imageUrls = readdirSync('public/images/illustrations')
+const slideshowItems = readdirSync('public/images/illustrations')
   .filter((filename) => filename.toLowerCase().endsWith('.webp'))
   .sort((a, b) => a.localeCompare(b, 'en'))
-  .map((filename) =>
-    withBase(`/images/illustrations/${encodeURIComponent(filename)}`)
-  );
+  .map((filename) => {
+    const artistId = filename.match(/^([a-z0-9]+)_/i)?.[1]?.toLowerCase() ?? '';
+    const artist = artists[artistId as keyof typeof artists];
+
+    return {
+      url: withBase(`/images/illustrations/${encodeURIComponent(filename)}`),
+      artistName: artist?.name ?? artistId,
+    };
+  });
 ---
 
 <!doctype html>
@@ -16,25 +23,39 @@ const imageUrls = readdirSync('public/images/illustrations')
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700&display=swap"
+      rel="stylesheet"
+    />
     <title>Illustration Slideshow | Mokomo Games</title>
   </head>
   <body>
     <main class="slideshow" aria-label="イラストスライドショー">
-      <img class="slide is-visible" alt="" />
-      <img class="slide" alt="" />
+      <figure class="slide is-visible">
+        <img class="slide-image" alt="" />
+        <figcaption class="artist-name"></figcaption>
+      </figure>
+      <figure class="slide">
+        <img class="slide-image" alt="" />
+        <figcaption class="artist-name"></figcaption>
+      </figure>
       <p class="empty-message" hidden>表示できるWebP画像がありません。</p>
     </main>
 
-    <script define:vars={{ imageUrls }}>
+    <script define:vars={{ slideshowItems }}>
       const slides = Array.from(document.querySelectorAll('.slide'));
       const emptyMessage = document.querySelector('.empty-message');
       const params = new URLSearchParams(window.location.search);
-      const requestedDuration = Number(params.get('duration'));
-      const duration = Number.isFinite(requestedDuration)
+      const durationParam = params.get('duration');
+      const requestedDuration = Number(durationParam);
+      const duration = durationParam !== null && Number.isFinite(requestedDuration)
         ? Math.max(1000, requestedDuration)
         : 4000;
-      const requestedFade = Number(params.get('fade'));
-      const fadeDuration = Number.isFinite(requestedFade)
+      const fadeParam = params.get('fade');
+      const requestedFade = Number(fadeParam);
+      const fadeDuration = fadeParam !== null && Number.isFinite(requestedFade)
         ? Math.max(0, Math.min(requestedFade, duration))
         : Math.min(1500, duration);
 
@@ -60,24 +81,34 @@ const imageUrls = readdirSync('public/images/illustrations')
       }
 
       function refillQueue() {
-        queue = shuffle(imageUrls);
-        if (queue.length > 1 && queue[0] === lastUrl) {
+        queue = shuffle(slideshowItems);
+        if (queue.length > 1 && queue[0].url === lastUrl) {
           [queue[0], queue[1]] = [queue[1], queue[0]];
         }
       }
 
-      function nextUrl() {
+      function nextItem() {
         if (queue.length === 0) refillQueue();
-        const url = queue.shift() ?? '';
-        lastUrl = url;
-        return url;
+        const item = queue.shift();
+        lastUrl = item?.url ?? '';
+        return item;
       }
 
-      function loadImage(element, url) {
+      function loadItem(slide, item) {
         return new Promise((resolve) => {
-          element.onload = () => resolve(true);
-          element.onerror = () => resolve(false);
-          element.src = url;
+          const image = slide.querySelector('.slide-image');
+          const artistName = slide.querySelector('.artist-name');
+          if (!image || !artistName || !item) {
+            resolve(false);
+            return;
+          }
+
+          image.onload = () => resolve(true);
+          image.onerror = () => resolve(false);
+          artistName.textContent = item.artistName
+            ? `Illustration: ${item.artistName}さん`
+            : '';
+          image.src = item.url;
         });
       }
 
@@ -85,11 +116,11 @@ const imageUrls = readdirSync('public/images/illustrations')
         const incomingIndex = activeSlide === 0 ? 1 : 0;
         const incoming = slides[incomingIndex];
         const outgoing = slides[activeSlide];
-        const url = nextUrl();
+        const item = nextItem();
 
-        if (!url || !incoming) return;
+        if (!item || !incoming) return;
 
-        const loaded = await loadImage(incoming, url);
+        const loaded = await loadItem(incoming, item);
         if (!loaded) {
           window.setTimeout(advance, 100);
           return;
@@ -101,12 +132,12 @@ const imageUrls = readdirSync('public/images/illustrations')
         window.setTimeout(advance, duration);
       }
 
-      if (imageUrls.length === 0) {
+      if (slideshowItems.length === 0) {
         slides.forEach((slide) => slide.remove());
         if (emptyMessage) emptyMessage.hidden = false;
       } else {
-        const firstUrl = nextUrl();
-        loadImage(slides[0], firstUrl).then(() => {
+        const firstItem = nextItem();
+        loadItem(slides[0], firstItem).then(() => {
           window.setTimeout(advance, duration);
         });
       }
@@ -138,15 +169,39 @@ const imageUrls = readdirSync('public/images/illustrations')
   .slide {
     position: absolute;
     inset: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) 80px;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    margin: 0;
     opacity: 0;
     transition: opacity var(--fade-duration, 1500ms) ease;
   }
 
   .slide.is-visible {
     opacity: 1;
+  }
+
+  .slide-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+  }
+
+  .artist-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 20px;
+    color: #fff;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: center;
   }
 
   .empty-message {
