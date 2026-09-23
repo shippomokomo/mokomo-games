@@ -376,11 +376,6 @@ const groups = allGroups.filter(
   (group) => group.games.length > 0
 );
 
-const initialIndexRows = [
-  allGroups.filter((group) => alphabetGroups.indexOf(group.name) >= 0 && alphabetGroups.indexOf(group.name) < 13),
-  allGroups.filter((group) => alphabetGroups.indexOf(group.name) >= 13),
-  allGroups.filter((group) => !alphabetGroups.includes(group.name)),
-];
 ---
 
 <BaseLayout title="Archives | Mokomo Games">
@@ -447,21 +442,17 @@ const initialIndexRows = [
           頭文字から探す
         </span>
 
-        <div class="initial-index-groups">
-          {initialIndexRows.map((row) => (
-            <div class="initial-index-links">
-              {row.map((group) => (
-                group.games.length > 0 ? (
-                  <a href={`#group-${group.name}`}>
-                    {group.name === 'その他' ? '他' : group.name}
-                  </a>
-                ) : (
-                  <span class="initial-index-unavailable" aria-disabled="true">
-                    {group.name === 'その他' ? '他' : group.name}
-                  </span>
-                )
-              ))}
-            </div>
+        <div class="initial-index-links">
+          {allGroups.map((group) => (
+            group.games.length > 0 ? (
+              <a href={`#group-${group.name}`}>
+                {group.name === 'その他' ? '他' : group.name}
+              </a>
+            ) : (
+              <span class="initial-index-unavailable" aria-disabled="true">
+                {group.name === 'その他' ? '他' : group.name}
+              </span>
+            )
           ))}
         </div>
       </nav>
@@ -856,11 +847,6 @@ const initialIndexRows = [
     color: var(--color-text);
 
     font-weight: 700;
-  }
-
-  .initial-index-groups {
-    display: grid;
-    gap: 0.45rem;
   }
 
   .initial-index-links {

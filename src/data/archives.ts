@@ -212,6 +212,7 @@ export const games = [
   { title: 'Poly Bridge 2', url: 'https://www.youtube.com/live/Cvl0yHjN33I' },
   { title: 'Pony Island', url: 'https://www.youtube.com/live/WHFrx3B-TKU?feature=share' },
   { title: 'Portal 2', url: 'https://youtube.com/playlist?list=PLnacVyptWBIajPjZ8vSPsD4kY6NI_fi52' },
+  { title: 'PRAGMATA', url: 'https://youtube.com/playlist?list=PLNS95jJVYMpo' },
   { title: 'Project Winter', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbfRK3d-KvX5qxxf_GF8kaO' },
   { title: 'PW7A', url: 'https://www.youtube.com/live/L_LyZmReMBA' },
 

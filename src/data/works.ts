@@ -90,8 +90,8 @@ export const workSections = [
           'パズルゲーム「BABA IS YOU」のもこもテーマのMODを作っていただきました！かなり歯ごたえのあるレベルが揃っています！',
         links: [
           {
-            label: 'ダウンロード：Ver 1.50b（最新版）',
-            url: 'https://drive.google.com/file/d/18lTT8QpneHTTSIDCMFIEat0ij7lorEbw/view?usp=sharing',
+            label: 'ダウンロード',
+            url: '/downloads/moko-is-you-level-pack.zip',
           },
         ],
         notice:
@@ -105,8 +105,8 @@ export const workSections = [
           "パズルゲーム「Patrick's Parabox」のもこもテーマのMODを作っていただきました！アイデアの詰まった、愛のあふれるレベル全10問！",
         links: [
           {
-            label: 'ダウンロード（Google Drive）',
-            url: 'https://drive.google.com/file/d/1-Rpq_eGnthQHm7S_6fVkZ6k0Pzvd6abj/view?usp=sharing',
+            label: 'ダウンロード',
+            url: '/downloads/patricks-parabox-mod.zip',
           },
         ],
       },
