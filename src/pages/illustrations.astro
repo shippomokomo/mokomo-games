@@ -118,11 +118,11 @@ const illustrations = getIllustrationMedia();
         <div class="illustration-media">
           {illustration.isVideo ? (
             <>
-              <video class="illustration-image illustration-video" data-full={illustration.url} preload="none" muted playsinline tabindex="0" aria-label={illustration.artist ? `${illustration.artist.name}さんの動画` : '動画'}></video>
+              <video class="illustration-image illustration-video" data-lightbox-trigger data-full={illustration.url} preload="none" muted playsinline tabindex="0" aria-label={illustration.artist ? `${illustration.artist.name}さんの動画` : '動画'}></video>
               <span class="video-play" aria-hidden="true">▶</span>
             </>
           ) : (
-            <img class="illustration-image" src={illustration.url} data-full={illustration.url} alt={illustration.artist ? `${illustration.artist.name}さんのイラスト` : 'イラスト'} loading="lazy" tabindex="0" />
+            <img class="illustration-image" data-lightbox-trigger src={illustration.url} data-full={illustration.url} alt={illustration.artist ? `${illustration.artist.name}さんのイラスト` : 'イラスト'} loading="lazy" tabindex="0" />
           )}
         </div>
 
@@ -320,6 +320,7 @@ const illustrations = getIllustrationMedia();
 
       lightboxVideo.pause();
       lightboxVideo.removeAttribute('src');
+      lightboxVideo.removeAttribute('aria-label');
       lightboxVideo.load();
       lightboxVideo.hidden = true;
       lightboxImage.hidden = true;
@@ -327,6 +328,10 @@ const illustrations = getIllustrationMedia();
 
       if (image instanceof HTMLVideoElement) {
         lightboxVideo.src = fullSrc;
+        lightboxVideo.setAttribute(
+          'aria-label',
+          image.getAttribute('aria-label') ?? '動画'
+        );
         lightboxVideo.hidden = false;
         lightboxVideo.play().catch(() => {});
       } else {
@@ -357,6 +362,7 @@ const illustrations = getIllustrationMedia();
       lightbox.setAttribute('aria-hidden', 'true');
       lightboxVideo.pause();
       lightboxVideo.removeAttribute('src');
+      lightboxVideo.removeAttribute('aria-label');
       lightboxVideo.load();
       lightboxVideo.hidden = true;
       lightboxImage.removeAttribute('src');

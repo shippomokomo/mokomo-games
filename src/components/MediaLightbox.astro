@@ -5,21 +5,125 @@ interface Props {
 }
 
 const { id, includeVideo = false } = Astro.props;
+const statusId = `${id}-status`;
 ---
 
-<div id={id} class="lightbox" role="dialog" aria-modal="true" aria-label="メディアの拡大表示" aria-hidden="true">
+<div id={id} class="lightbox" role="dialog" aria-modal="true" aria-label="メディアの拡大表示" aria-describedby={statusId} aria-hidden="true">
   <button class="lightbox-close" type="button" aria-label="閉じる">×</button>
   <button class="lightbox-prev" type="button" aria-label="前の画像">‹</button>
   <img class="lightbox-image" src="" alt="" />
   {includeVideo && <video class="lightbox-video" muted loop playsinline hidden></video>}
   <button class="lightbox-next" type="button" aria-label="次の画像">›</button>
+  <p id={statusId} class="lightbox-status" aria-live="polite"></p>
 </div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.lightbox[role="dialog"]').forEach((lightbox) => {
+    const closeButton = lightbox.querySelector<HTMLButtonElement>('.lightbox-close');
+    const status = lightbox.querySelector<HTMLElement>('.lightbox-status');
+    let returnFocus: HTMLElement | null = null;
+    let lastTrigger: HTMLElement | null = null;
+    let inactiveSiblings: Array<{ element: HTMLElement; wasInert: boolean }> = [];
+
+    const findTrigger = (target: EventTarget | null) =>
+      target instanceof Element
+        ? target.closest<HTMLElement>('[data-lightbox-trigger]')
+        : null;
+
+    const rememberTrigger = (event: Event) => {
+      const trigger = findTrigger(event.target);
+      if (trigger) lastTrigger = trigger;
+    };
+
+    document.addEventListener('pointerdown', rememberTrigger, true);
+    document.addEventListener('keydown', rememberTrigger, true);
+
+    const updateStatus = () => {
+      if (!status) return;
+      const visibleMedia = lightbox.querySelector<HTMLImageElement | HTMLVideoElement>(
+        '.lightbox-image:not([hidden]), .lightbox-video:not([hidden])'
+      );
+      status.textContent =
+        visibleMedia?.getAttribute('alt') ??
+        visibleMedia?.getAttribute('aria-label') ??
+        '拡大表示中';
+    };
+
+    const activate = () => {
+      returnFocus = lastTrigger ?? (
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null
+      );
+
+      inactiveSiblings = Array.from(lightbox.parentElement?.children ?? [])
+        .filter((element): element is HTMLElement =>
+          element instanceof HTMLElement && element !== lightbox
+        )
+        .map((element) => ({ element, wasInert: element.inert }));
+
+      inactiveSiblings.forEach(({ element }) => {
+        element.inert = true;
+      });
+
+      updateStatus();
+      closeButton?.focus();
+    };
+
+    const deactivate = () => {
+      inactiveSiblings.forEach(({ element, wasInert }) => {
+        element.inert = wasInert;
+      });
+      inactiveSiblings = [];
+      returnFocus?.focus();
+      returnFocus = null;
+    };
+
+    new MutationObserver(() => {
+      if (lightbox.getAttribute('aria-hidden') === 'false') {
+        activate();
+      } else {
+        deactivate();
+      }
+    }).observe(lightbox, { attributes: true, attributeFilter: ['aria-hidden'] });
+
+    new MutationObserver(updateStatus).observe(lightbox, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['src', 'alt', 'aria-label', 'hidden'],
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab' || lightbox.getAttribute('aria-hidden') !== 'false') {
+        return;
+      }
+
+      const controls = Array.from(
+        lightbox.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
+      ).filter((button) => !button.hidden);
+
+      if (controls.length === 0) return;
+
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  });
+</script>
 
 <style>
   .lightbox { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; padding: 3rem 5rem; background: rgba(0, 0, 0, 0.88); }
   .lightbox.is-open { display: flex; }
   .lightbox-image, .lightbox-video { display: block; width: auto; height: auto; max-width: 90vw; max-height: 90vh; object-fit: contain; }
   .lightbox-image[hidden], .lightbox-video[hidden] { display: none; }
+  .lightbox-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .lightbox button { position: fixed; z-index: 1001; border: 0; background: transparent; color: #fff; cursor: pointer; line-height: 1; opacity: 0.8; transition: opacity 0.15s ease, transform 0.15s ease; }
   .lightbox button:hover { opacity: 1; }
   .lightbox-close { top: 1rem; right: 1.5rem; font-size: 3rem; }

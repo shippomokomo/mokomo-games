@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaLightbox from '../components/MediaLightbox.astro';
 import { withBase } from '../utils/paths';
 import { artists } from '../data/artists';
 
@@ -54,6 +55,7 @@ const references = {
         <div class="image-frame">
           <img
             class="reference-image"
+            data-lightbox-trigger
             src={references.keyArt.src}
             data-full={references.keyArt.src}
             alt={references.keyArt.alt}
@@ -85,6 +87,7 @@ const references = {
           <div class="image-frame">
             <img
               class="reference-image"
+              data-lightbox-trigger
               src={references.current.src}
               data-full={references.current.src}
               alt={references.current.alt}
@@ -116,6 +119,7 @@ const references = {
             <div class="image-frame">
               <img
                 class="reference-image"
+                data-lightbox-trigger
                 src={reference.src}
                 data-full={reference.src}
                 alt={reference.alt}
@@ -140,41 +144,7 @@ const references = {
     </section>
   </div>
 
-  <div
-    id="lightbox"
-    class="lightbox"
-    aria-hidden="true"
-  >
-    <button
-      class="lightbox-close"
-      type="button"
-      aria-label="閉じる"
-    >
-      ×
-    </button>
-
-    <button
-      class="lightbox-prev"
-      type="button"
-      aria-label="前の画像"
-    >
-      ‹
-    </button>
-
-    <img
-      class="lightbox-image"
-      src=""
-      alt=""
-    />
-
-    <button
-      class="lightbox-next"
-      type="button"
-      aria-label="次の画像"
-    >
-      ›
-    </button>
-  </div>
+  <MediaLightbox id="lightbox" />
 
   <script>
     const images = Array.from(
@@ -548,117 +518,6 @@ const references = {
     text-align: center;
   }
 
-  /*
-   * Lightbox
-   */
-  .lightbox {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 1000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    background:
-      rgba(0, 0, 0, 0.88);
-
-    padding: 3rem 5rem;
-  }
-
-  .lightbox.is-open {
-    display: flex;
-  }
-
-  .lightbox-image {
-    display: block;
-
-    max-width: 90vw;
-    max-height: 90vh;
-
-    width: auto;
-    height: auto;
-
-    object-fit: contain;
-  }
-
-  /*
-   * Lightboxボタン
-   *
-   * Home / Scheduleと同じ
-   */
-  .lightbox button {
-    position: fixed;
-
-    z-index: 1001;
-
-    border: 0;
-
-    background: transparent;
-    color: white;
-
-    cursor: pointer;
-
-    line-height: 1;
-
-    opacity: 0.8;
-
-    transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
-  }
-
-  .lightbox button:hover {
-    opacity: 1;
-  }
-
-  .lightbox-close {
-    top: 1rem;
-    right: 1.5rem;
-
-    font-size: 3rem;
-  }
-
-  .lightbox-close:hover {
-    transform: scale(1.1);
-  }
-
-  .lightbox-prev {
-    left: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-prev:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  .lightbox-next {
-    right: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-next:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  :global(body.lightbox-open) {
-    overflow: hidden;
-  }
 
   /*
    * スマートフォン
@@ -704,32 +563,5 @@ const references = {
       border-radius: 10px;
     }
 
-    .lightbox {
-      padding: 3rem 2.5rem;
-    }
-
-    .lightbox-image {
-      max-width: 94vw;
-      max-height: 88vh;
-    }
-
-    .lightbox-close {
-      top: 0.75rem;
-      right: 1rem;
-
-      font-size: 2.5rem;
-    }
-
-    .lightbox-prev {
-      left: 0.25rem;
-
-      font-size: 3.5rem;
-    }
-
-    .lightbox-next {
-      right: 0.25rem;
-
-      font-size: 3.5rem;
-    }
   }
 </style>

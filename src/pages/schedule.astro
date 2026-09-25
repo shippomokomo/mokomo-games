@@ -54,6 +54,7 @@ const latestYear = years[0];
             <article class="schedule-item">
 
               <img
+                data-lightbox-trigger
                 src={year === latestYear ? schedule.url : undefined}
                 data-src={year === latestYear ? undefined : schedule.url}
                 data-full={schedule.url}
