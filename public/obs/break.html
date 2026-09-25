@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
+<style>
+    body {
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .blink-text {
+        font-family: 'Darumadrop One', cursive;
+        font-size: 200px;
+        color: #fff;
+        /* ease-in-outで機械的ではない「呼吸するような」滑らかな緩急をつける */
+        animation: naturalBlink 6s ease-in-out infinite;
+    }
+    @keyframes naturalBlink {
+        0%, 100% { opacity: 0; }
+        25%      { opacity: 1; } /* 1.5秒かけてふんわりフェードイン */
+        65%      { opacity: 1; } /* 2.5秒間しっかり表示をキープ */
+        90%      { opacity: 0; } /* 1.5秒かけて自然にフェードアウト */
+    }
+</style>
+</head>
+<body>
+    <div class="blink-text">Break Time</div>
+</body>
+</html>

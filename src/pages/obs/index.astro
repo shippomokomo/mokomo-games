@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../utils/paths';
+
+const tools = [
+  { id: 'clock', name: '時計', path: '/obs/clock.html', description: '配信画面に現在時刻を表示します。', detail: 'PCの時刻を24時間表記で表示し、10秒ごとに更新します。背景は透明です。' },
+  { id: 'break', name: 'Break Time', path: '/obs/break.html', description: '休憩中のシーンに「Break Time」を表示します。', detail: '6秒周期でゆっくりフェードします。背景は透明です。' },
+].map(tool => ({ ...tool, url: new URL(withBase(tool.path), Astro.site).href }));
+---
+
+<BaseLayout title="OBS Tools | Mokomo Games" description="配信用ツールのURLと使い方。" noindex>
+  <section class="obs-tools" aria-labelledby="tools-title">
+    <p class="eyebrow">MOKOMO GAMES / 配信用</p>
+    <h1 id="tools-title">OBS Tools</h1>
+    <p class="intro">いつもの配信に使う、時計と休憩表示。<br />使いたいツールのURLをコピーして、OBSに貼り付けてください。</p>
+    <div class="tool-grid">
+      {tools.map(tool => (
+        <article>
+          <h2>{tool.name}</h2>
+          <p>{tool.description}</p>
+          <p class="detail">{tool.detail}</p>
+          <label for={`${tool.id}-url`}>OBSで指定するURL</label>
+          <input id={`${tool.id}-url`} type="text" value={tool.url} readonly spellcheck="false" />
+          <div class="actions">
+            <button type="button" data-copy={tool.id} aria-label={`${tool.name}のURLをコピー`}>URLをコピー</button>
+            <a href={withBase(tool.path)} target="_blank" rel="noopener">表示を開く ↗</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p id="copy-status" role="status" aria-live="polite"></p>
+    <aside aria-labelledby="usage-title">
+      <h2 id="usage-title">OBSへの追加方法</h2>
+      <ol>
+        <li>ソースの「＋」から「ブラウザ」を追加します。</li>
+        <li>「ローカルファイル」をオフにして、コピーしたURLを入力します。</li>
+        <li>幅・高さを配信画面に合わせて設定します。迷ったら1920 × 1080で追加し、位置や大きさを調整してください。</li>
+      </ol>
+      <p class="detail">表示にはGoogle Fontsを使っています。配信前に読み込みと表示を確認してください。</p>
+    </aside>
+    <p class="note">自分用の一覧です。このページをブックマークしておくと便利です。通常のナビゲーションには掲載していませんが、URLを知っている人はアクセスできます。</p>
+  </section>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const input = document.getElementById(`${button.dataset.copy}-url`) as HTMLInputElement;
+      const status = document.getElementById('copy-status')!;
+      try {
+        await navigator.clipboard.writeText(input.value);
+        status.textContent = 'URLをコピーしました。OBSの「URL」欄に貼り付けてください。';
+      } catch {
+        input.focus();
+        input.select();
+        status.textContent = '自動コピーができませんでした。選択されたURLを手動でコピーしてください。';
+      }
+    });
+  });
+</script>
+
+<style>
+  .obs-tools { max-width: 1000px; margin: 1rem auto; }
+  .eyebrow { color: var(--color-green-dark); font-size: .8rem; font-weight: 700; letter-spacing: .14em; }
+  h1 { margin-bottom: 1rem; font-size: clamp(2rem, 5vw, 3rem); }
+  .intro { color: var(--color-text-soft); margin-bottom: 2rem; }
+  .tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  article { border: 1px solid var(--color-border); background: white; border-radius: 20px; padding: 1.5rem; }
+  h2 { margin: 0 0 1rem; font-size: 1.4rem; }
+  .detail, .note { color: var(--color-text-soft); font-size: .9rem; }
+  label { display: block; margin: 1.5rem 0 .5rem; font-size: .85rem; font-weight: 700; }
+  input { width: 100%; min-width: 0; padding: .8rem; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-background); color: var(--color-text); font-size: .9rem; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1rem; }
+  button { border: 0; border-radius: 8px; padding: .75rem 1rem; background: var(--color-green-dark); color: white; font: inherit; cursor: pointer; }
+  button:hover { filter: brightness(.9); }
+  .actions a { font-size: .9rem; text-underline-offset: .2em; }
+  #copy-status { min-height: 1.7em; color: var(--color-green-dark); font-size: .9rem; }
+  aside { padding: 1.5rem; border-radius: 16px; background: var(--color-green-soft); }
+  ol { padding-left: 1.5rem; }
+  li + li { margin-top: .5rem; }
+  .note { margin-top: 1.5rem; }
+  @media (max-width: 700px) { .tool-grid { grid-template-columns: 1fr; } article, aside { padding: 1.25rem; } }
+</style>
