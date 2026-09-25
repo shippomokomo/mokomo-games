@@ -6,6 +6,13 @@ import { withBase } from '../utils/paths';
 <BaseLayout title="ページが見つかりません | Mokomo Games">
   <section class="not-found" aria-labelledby="not-found-title">
     <p class="error-code">404</p>
+    <img
+      class="not-found-image"
+      src={withBase('/images/404.webp')}
+      alt="困った表情の七宝もこも"
+      width="1280"
+      height="1280"
+    />
     <h1 id="not-found-title">ページが見つかりません</h1>
     <p>URLが変わったか、ページが削除された可能性があります。</p>
     <a class="home-link" href={withBase('/')}>Homeに戻る</a>
@@ -26,6 +33,13 @@ import { withBase } from '../utils/paths';
     font-size: clamp(4rem, 12vw, 7rem);
     font-weight: 700;
     line-height: 1.2;
+  }
+
+  .not-found-image {
+    display: block;
+    width: min(22rem, 72vw);
+    height: auto;
+    margin: 0.5rem auto 1.5rem;
   }
 
   h1 {
