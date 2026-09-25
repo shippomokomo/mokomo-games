@@ -1,0 +1,36 @@
+---
+import { shortLinks } from '../../data/redirects';
+
+export function getStaticPaths() {
+  return Object.entries(shortLinks).map(([slug, destination]) => ({
+    params: { slug },
+    props: { destination },
+  }));
+}
+
+interface Props {
+  destination: string;
+}
+
+const { destination } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <link rel="canonical" href={destination} />
+    <title>移動しています | Mokomo Games</title>
+  </head>
+  <body>
+    <p>
+      移動しています。自動的に移動しない場合は、<a href={destination}>こちらをクリックしてください</a>。
+    </p>
+    <script is:inline define:vars={{ destination }}>
+      window.location.replace(destination);
+    </script>
+  </body>
+</html>
