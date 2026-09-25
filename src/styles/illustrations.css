@@ -170,6 +170,14 @@
     margin: 0 auto;
   }
 
+  /* Native masonry keeps the DOM order used by filters and the lightbox.
+     Browsers without Grid Lanes retain the regular grid above. */
+  @supports (display: grid-lanes) {
+    .illustration-grid {
+      display: grid-lanes;
+    }
+  }
+
   .illustration-item {
     min-width: 0;
   }
