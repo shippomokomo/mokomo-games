@@ -1,0 +1,284 @@
+/*
+   * フィルター全体
+   */
+  .filters {
+    display: grid;
+    gap: 1rem;
+
+    max-width: 1400px;
+    margin: 0 auto 2.5rem;
+    padding: 1.25rem;
+
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+
+    background: #fff;
+  }
+
+  /*
+   * Type / Character
+   */
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    min-width: 7rem;
+
+    color: var(--color-text);
+
+    font-weight: 700;
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .artist-search {
+    width: min(100%, 20rem);
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .artist-search:focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+  }
+
+  /*
+   * フィルターボタン共通
+   */
+  .filter-button,
+  .artist-filter-button,
+  .artist-filter-clear {
+    padding: 0.45rem 0.9rem;
+
+    border: 1px solid var(--color-green);
+    border-radius: 999px;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+
+    cursor: pointer;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .filter-button:hover,
+  .artist-filter-button:hover,
+  .artist-filter-clear:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
+  }
+
+  /*
+   * 選択中のフィルター
+   */
+  .filter-button.is-active {
+    border-color: #628c3f;
+
+    background: #628c3f;
+    color: #fff;
+  }
+
+  .filter-button.is-active:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-dark);
+    color: #fff;
+  }
+
+  /*
+   * 作者フィルター使用中
+   */
+  .artist-filter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    padding-top: 1rem;
+
+    border-top: 1px solid var(--color-border);
+  }
+
+  .artist-filter[hidden] {
+    display: none;
+  }
+
+  .artist-filter strong {
+    color: var(--color-green-dark);
+  }
+
+  .artist-filter-clear {
+    padding: 0.35rem 0.75rem;
+
+    font-size: 0.9rem;
+  }
+
+  .result-count {
+    max-width: 1400px;
+    margin: -1.5rem auto 1.5rem;
+    padding: 0 0.25rem;
+    color: var(--color-green-dark);
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  /*
+   * 検索結果なし
+   */
+  .no-results {
+    max-width: 1400px;
+    margin: 2rem auto;
+
+    color: var(--color-text-soft);
+
+    text-align: center;
+  }
+
+  /*
+   * イラスト一覧
+   */
+  .illustration-grid {
+    display: grid;
+    grid-template-columns:
+      repeat(auto-fit, minmax(300px, 1fr));
+
+    gap: 1.75rem;
+
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .illustration-item {
+    min-width: 0;
+  }
+
+  .illustration-item[hidden] {
+    display: none;
+  }
+
+  /*
+   * 画像
+   *
+   * Home / Referencesと同様、
+   * クリックできる画像には枠線を付けない
+   */
+  .illustration-image {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    border-radius: 10px;
+
+    cursor: zoom-in;
+
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .illustration-media { position: relative; }
+  .illustration-video { aspect-ratio: 4 / 3; object-fit: contain; background: #eee; }
+  .video-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(0, 0, 0, 0.6); color: #fff; pointer-events: none; }
+
+  .illustration-image:hover {
+    transform: scale(1.01);
+    opacity: 0.96;
+  }
+
+  /*
+   * 作者情報
+   */
+  .illustration-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    margin-top: 0.75rem;
+  }
+
+  .artist-link {
+    color: var(--color-green-dark);
+
+    font-weight: 600;
+
+    text-underline-offset: 0.2em;
+
+    transition: color 0.15s ease;
+  }
+
+  .artist-link:hover {
+    color: var(--color-green);
+  }
+
+  /*
+   * 「作品を見る」は作者名の補助操作なので
+   * 少し小さめのボタン
+   */
+  .artist-filter-button {
+    padding: 0.3rem 0.7rem;
+
+    font-size: 0.85rem;
+  }
+
+
+  /*
+   * スマートフォン
+   */
+  @media (max-width: 700px) {
+    .filters {
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .filter-group {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      min-width: 0;
+    }
+
+    .artist-filter {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .illustration-grid {
+      grid-template-columns: 1fr;
+
+      gap: 1.5rem;
+    }
+
+    .illustration-image {
+      border-radius: 8px;
+    }
+
+  }

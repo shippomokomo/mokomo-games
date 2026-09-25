@@ -1,0 +1,380 @@
+.home-page {
+    width: min(100%, 1100px);
+    margin: 0 auto;
+  }
+
+  /*
+   * メインビジュアル
+   */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr minmax(280px, 430px);
+    gap: 3rem;
+    align-items: center;
+
+    min-height: 620px;
+    padding: 2rem 0 4rem;
+  }
+
+  .hero-image {
+    order: 2;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .hero-image img {
+    display: block;
+
+    width: 100%;
+    max-width: 430px;
+    max-height: 600px;
+
+    object-fit: contain;
+  }
+
+  .hero-content {
+    order: 1;
+    min-width: 0;
+  }
+
+  .hero-content h1 {
+    margin: 0 0 1.5rem;
+
+    line-height: 1.15;
+  }
+
+  .name-ja,
+  .name-en {
+    display: block;
+  }
+
+  .name-ja {
+    color: var(--color-text);
+
+    font-size: clamp(2.7rem, 5.6vw, 4.6rem);
+  }
+
+  .name-en {
+    margin-top: 0.5rem;
+
+    color: var(--color-green-dark);
+
+    font-size: clamp(1.45rem, 2.9vw, 2.1rem);
+    font-weight: 600;
+  }
+
+  /*
+   * HeroのSNSボタン
+   */
+  .hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    margin-top: 1.75rem;
+  }
+
+  .hero-links a,
+  .link-list a,
+  .section-link a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0.65rem 1.15rem;
+
+    border: 1px solid var(--color-green);
+    border-radius: 999px;
+
+    background: #fff;
+    color: var(--color-green-dark);
+
+    font-weight: 600;
+    line-height: 1.2;
+
+    text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .hero-links a:hover,
+  .link-list a:hover,
+  .section-link a:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-soft);
+    color: var(--color-green-dark);
+
+    transform: translateY(-1px);
+  }
+
+  /*
+   * メインビジュアルと
+   * Latest Scheduleの区切り線
+   */
+  .hero-divider {
+    width: 100%;
+    height: 1px;
+    margin: 0 0 3rem;
+
+    background: var(--color-border);
+  }
+  
+  /*
+   * 各セクション共通
+   */
+  .home-section {
+    margin: 0 0 5rem;
+
+    scroll-margin-top: 2rem;
+  }
+
+  .home-section h2 {
+    margin: 0 0 1.5rem;
+
+    color: var(--color-text);
+
+    font-size: 2rem;
+  }
+
+  /*
+   * Latest Schedule
+   */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .schedule-card {
+    display: block;
+
+    width: 100%;
+    padding: 0;
+
+    border: 0;
+    border-radius: 13px;
+
+    background: #fff;
+
+    font: inherit;
+
+    cursor: zoom-in;
+    overflow: hidden;
+
+    transition:
+      transform 0.15s ease;
+  }
+
+  .schedule-card img {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .schedule-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .schedule-card:hover img {
+    opacity: 0.96;
+  }
+
+  .section-link {
+    margin-top: 1.25rem;
+
+    text-align: center;
+  }
+
+  /*
+   * Contents / Stores
+   */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .info-card {
+    position: relative;
+
+    display: block;
+
+    min-height: 150px;
+    padding: 1.5rem 3.5rem 1.5rem 1.5rem;
+
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+
+    background: #fff;
+    color: var(--color-text);
+
+    text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .info-card:hover {
+    border-color: var(--color-green);
+
+    background: var(--color-green-soft);
+
+    transform: translateY(-2px);
+  }
+
+  .info-card h3 {
+    margin: 0 0 0.75rem;
+
+    color: var(--color-green-dark);
+
+    font-size: 1.2rem;
+  }
+
+  .info-card p {
+    margin: 0;
+
+    color: var(--color-text);
+
+    line-height: 1.75;
+  }
+
+  .card-arrow {
+    position: absolute;
+
+    top: 1.5rem;
+    right: 1.5rem;
+
+    color: var(--color-green);
+
+    font-size: 1.35rem;
+    font-weight: 700;
+
+    transition: transform 0.15s ease;
+  }
+
+  .info-card:hover .card-arrow {
+    transform: translateX(3px);
+  }
+
+  /*
+   * Links
+   */
+  .link-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /*
+   * Contact
+   */
+  .contact-section p {
+    margin: 0 0 0.5rem;
+
+    line-height: 1.8;
+  }
+
+  .contact-section p[lang="en"] {
+    color: var(--color-text-soft);
+  }
+
+  .contact-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 46px;
+    margin-top: 1rem;
+    padding: 0.7rem 1.3rem;
+
+    border: 1px solid #628c3f;
+    border-radius: 999px;
+
+    background: #628c3f;
+    color: #fff;
+
+    font-weight: 700;
+    line-height: 1.2;
+
+    text-decoration: none;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .contact-button:hover {
+    border-color: var(--color-green-dark);
+
+    background: var(--color-green-dark);
+    color: #fff;
+
+    transform: translateY(-1px);
+  }
+
+
+  /*
+   * スマートフォン
+   */
+  @media (max-width: 700px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+
+      min-height: 0;
+      padding: 1.5rem 0 3.5rem;
+    }
+
+    .hero-image {
+      order: 1;
+    }
+
+    .hero-content {
+      order: 2;
+
+      text-align: center;
+    }
+
+    .hero-image img {
+      max-width: 320px;
+      max-height: 480px;
+    }
+
+    .hero-links {
+      justify-content: center;
+    }
+
+    .home-section {
+      margin-bottom: 4rem;
+    }
+
+    .home-section h2 {
+      font-size: 1.7rem;
+    }
+
+    .schedule-grid,
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .link-list {
+      justify-content: flex-start;
+    }
+
+  }
