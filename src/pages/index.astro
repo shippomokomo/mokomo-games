@@ -158,12 +158,13 @@ const links = [
         latestSchedules.length > 0 ? (
           <>
             <div class="schedule-grid">
-              {latestSchedules.map((schedule, index) => (
+              {latestSchedules.map((schedule) => (
                 <button
                   class="schedule-card"
                   type="button"
                   data-lightbox-trigger
-                  data-schedule-index={index}
+                  aria-controls="schedule-lightbox"
+                  aria-haspopup="dialog"
                   aria-label={`${schedule.dateLabel} のスケジュールを拡大表示`}
                 >
                   <img
@@ -291,5 +292,3 @@ const links = [
 
   <MediaLightbox id="schedule-lightbox" />
 </BaseLayout>
-
-<script src="../scripts/home.ts"></script>

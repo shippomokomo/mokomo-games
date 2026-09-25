@@ -38,44 +38,10 @@ const items = Array.from(
     const resultCount =
       document.querySelector<HTMLElement>('.result-count-value');
 
-    const lightbox =
-      document.querySelector<HTMLElement>('#lightbox');
-
-    const lightboxImage =
-      document.querySelector<HTMLImageElement>('.lightbox-image');
-
-    const lightboxVideo =
-      document.querySelector<HTMLVideoElement>('.lightbox-video');
-
-    const closeButton =
-      document.querySelector<HTMLButtonElement>('.lightbox-close');
-
-    const prevButton =
-      document.querySelector<HTMLButtonElement>('.lightbox-prev');
-
-    const nextButton =
-      document.querySelector<HTMLButtonElement>('.lightbox-next');
-
     let selectedType = 'all';
     let selectedCharacter = 'all';
     let selectedArtist = 'all';
     let artistQuery = '';
-
-    type GalleryMedia = HTMLImageElement | HTMLVideoElement;
-    let visibleImages: GalleryMedia[] = [];
-    let currentIndex = 0;
-
-    function updateVisibleImages() {
-      visibleImages = items
-        .filter((item) => !item.hidden)
-        .map((item) =>
-          item.querySelector<GalleryMedia>('.illustration-image')
-        )
-        .filter(
-          (image): image is GalleryMedia =>
-            image !== null
-        );
-    }
 
     function updateItems() {
       let visibleCount = 0;
@@ -124,93 +90,7 @@ const items = Array.from(
         noResults.hidden = visibleCount !== 0;
       }
 
-      updateVisibleImages();
-    }
 
-    function showImage(index: number) {
-      if (
-        !lightbox ||
-        !lightboxImage ||
-        !lightboxVideo ||
-        visibleImages.length === 0
-      ) {
-        return;
-      }
-
-      if (index < 0) {
-        index = visibleImages.length - 1;
-      }
-
-      if (index >= visibleImages.length) {
-        index = 0;
-      }
-
-      currentIndex = index;
-
-      const image = visibleImages[currentIndex];
-      const fullSrc = image.getAttribute('data-full');
-
-      if (!fullSrc) return;
-
-      lightboxVideo.pause();
-      lightboxVideo.removeAttribute('src');
-      lightboxVideo.removeAttribute('aria-label');
-      lightboxVideo.load();
-      lightboxVideo.hidden = true;
-      lightboxImage.hidden = true;
-      lightboxImage.removeAttribute('src');
-
-      if (image instanceof HTMLVideoElement) {
-        lightboxVideo.src = fullSrc;
-        lightboxVideo.setAttribute(
-          'aria-label',
-          image.getAttribute('aria-label') ?? '動画'
-        );
-        lightboxVideo.hidden = false;
-        lightboxVideo.play().catch(() => {});
-      } else {
-        lightboxImage.src = fullSrc;
-        lightboxImage.alt = image.alt;
-        lightboxImage.hidden = false;
-      }
-
-      lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('lightbox-open');
-    }
-
-    function openImage(image: GalleryMedia) {
-      updateVisibleImages();
-
-      const index = visibleImages.indexOf(image);
-
-      if (index === -1) return;
-
-      showImage(index);
-    }
-
-    function closeLightbox() {
-      if (!lightbox || !lightboxImage || !lightboxVideo) return;
-
-      lightbox.classList.remove('is-open');
-      lightbox.setAttribute('aria-hidden', 'true');
-      lightboxVideo.pause();
-      lightboxVideo.removeAttribute('src');
-      lightboxVideo.removeAttribute('aria-label');
-      lightboxVideo.load();
-      lightboxVideo.hidden = true;
-      lightboxImage.removeAttribute('src');
-      lightboxImage.hidden = true;
-      lightboxImage.setAttribute('alt', '');
-      document.body.classList.remove('lightbox-open');
-    }
-
-    function showPrevious() {
-      showImage(currentIndex - 1);
-    }
-
-    function showNext() {
-      showImage(currentIndex + 1);
     }
 
     typeButtons.forEach((button) => {
@@ -294,28 +174,6 @@ const items = Array.from(
       }
     );
 
-    const illustrationImages = Array.from(
-      document.querySelectorAll<GalleryMedia>(
-        '.illustration-image'
-      )
-    );
-
-    illustrationImages.forEach((image) => {
-      image.addEventListener('click', () => {
-        openImage(image);
-      });
-
-      image.addEventListener('keydown', (event) => {
-        if (
-          event.key === 'Enter' ||
-          event.key === ' '
-        ) {
-          event.preventDefault();
-          openImage(image);
-        }
-      });
-    });
-
     const previewVideos = Array.from(document.querySelectorAll<HTMLVideoElement>('.illustration-video'));
     const loadPreview = (video: HTMLVideoElement) => {
       if (video.src) return;
@@ -340,44 +198,3 @@ const items = Array.from(
     } else {
       previewVideos.forEach(loadPreview);
     }
-
-    closeButton?.addEventListener(
-      'click',
-      closeLightbox
-    );
-
-    prevButton?.addEventListener(
-      'click',
-      showPrevious
-    );
-
-    nextButton?.addEventListener(
-      'click',
-      showNext
-    );
-
-    lightbox?.addEventListener('click', (event) => {
-      if (event.target === lightbox) {
-        closeLightbox();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (!lightbox?.classList.contains('is-open')) {
-        return;
-      }
-
-      if (event.key === 'Escape') {
-        closeLightbox();
-      }
-
-      if (event.key === 'ArrowLeft') {
-        showPrevious();
-      }
-
-      if (event.key === 'ArrowRight') {
-        showNext();
-      }
-    });
-
-    updateVisibleImages();

@@ -57,17 +57,17 @@ const latestYear = years[0];
 
             <article class="schedule-item">
 
+              <button class="media-trigger" type="button" data-lightbox-trigger aria-controls="lightbox" aria-haspopup="dialog" aria-label={`${schedule.dateLabel} のスケジュールを拡大表示`}>
               <img
                 width={schedule.width}
                 height={schedule.height}
-                data-lightbox-trigger
                 src={year === latestYear ? schedule.url : undefined}
                 data-src={year === latestYear ? undefined : schedule.url}
                 data-full={schedule.url}
                 alt={`${schedule.dateLabel} の配信スケジュール`}
                 loading="lazy"
-                tabindex="0"
               />
+              </button>
 
             </article>
 
@@ -112,227 +112,6 @@ const latestYear = years[0];
       });
 
     });
-
-
-    /*
-     * ライトボックス
-     */
-
-    const scheduleImages =
-      Array.from(
-        document.querySelectorAll('.schedule-item img')
-      );
-
-    const lightbox =
-      document.querySelector('#lightbox');
-
-    const lightboxImage =
-      document.querySelector('.lightbox-image');
-
-    const closeButton =
-      document.querySelector('.lightbox-close');
-
-    const prevButton =
-      document.querySelector('.lightbox-prev');
-
-    const nextButton =
-      document.querySelector('.lightbox-next');
-
-    let currentIndex = 0;
-
-
-    /*
-     * 指定した画像を拡大表示
-     */
-
-    function showImage(index) {
-
-      if (!lightbox || !lightboxImage) return;
-
-      if (index < 0) {
-        index = scheduleImages.length - 1;
-      }
-
-      if (index >= scheduleImages.length) {
-        index = 0;
-      }
-
-      currentIndex = index;
-
-      const image = scheduleImages[currentIndex];
-
-      const fullSrc =
-        image.getAttribute('data-full');
-
-      if (!fullSrc) return;
-
-      lightboxImage.setAttribute('src', fullSrc);
-
-      lightboxImage.setAttribute(
-        'alt',
-        image.getAttribute('alt') ?? ''
-      );
-
-      lightbox.classList.add('is-open');
-
-      lightbox.setAttribute(
-        'aria-hidden',
-        'false'
-      );
-
-      document.body.classList.add(
-        'lightbox-open'
-      );
-
-    }
-
-
-    /*
-     * ライトボックスを閉じる
-     */
-
-    function closeLightbox() {
-
-      if (!lightbox || !lightboxImage) return;
-
-      lightbox.classList.remove('is-open');
-
-      lightbox.setAttribute(
-        'aria-hidden',
-        'true'
-      );
-
-      lightboxImage.setAttribute('src', '');
-
-      document.body.classList.remove(
-        'lightbox-open'
-      );
-
-    }
-
-
-    /*
-     * 前の画像
-     */
-
-    function showPrevious() {
-      showImage(currentIndex - 1);
-    }
-
-
-    /*
-     * 次の画像
-     */
-
-    function showNext() {
-      showImage(currentIndex + 1);
-    }
-
-
-    /*
-     * 通常画像をクリック
-     */
-
-    scheduleImages.forEach((image, index) => {
-
-      image.addEventListener('click', () => {
-        showImage(index);
-      });
-
-
-      /*
-       * Enterキーでも開ける
-       */
-
-      image.addEventListener(
-        'keydown',
-        (event) => {
-
-          if (
-            event.key === 'Enter' ||
-            event.key === ' '
-          ) {
-            event.preventDefault();
-            showImage(index);
-          }
-
-        }
-      );
-
-    });
-
-
-    /*
-     * ボタン
-     */
-
-    closeButton?.addEventListener(
-      'click',
-      closeLightbox
-    );
-
-    prevButton?.addEventListener(
-      'click',
-      showPrevious
-    );
-
-    nextButton?.addEventListener(
-      'click',
-      showNext
-    );
-
-
-    /*
-     * 背景をクリックした場合も閉じる
-     */
-
-    lightbox?.addEventListener(
-      'click',
-      (event) => {
-
-        if (event.target === lightbox) {
-          closeLightbox();
-        }
-
-      }
-    );
-
-
-    /*
-     * キーボード操作
-     *
-     * ← 前
-     * → 次
-     * Esc 閉じる
-     */
-
-    document.addEventListener(
-      'keydown',
-      (event) => {
-
-        if (
-          !lightbox?.classList.contains(
-            'is-open'
-          )
-        ) {
-          return;
-        }
-
-        if (event.key === 'Escape') {
-          closeLightbox();
-        }
-
-        if (event.key === 'ArrowLeft') {
-          showPrevious();
-        }
-
-        if (event.key === 'ArrowRight') {
-          showNext();
-        }
-
-      }
-    );
-
   </script>
 
 </BaseLayout>

@@ -11,116 +11,15 @@ const statusId = `${id}-status`;
 <div id={id} class="lightbox" role="dialog" aria-modal="true" aria-label="メディアの拡大表示" aria-describedby={statusId} aria-hidden="true">
   <button class="lightbox-close" type="button" aria-label="閉じる">×</button>
   <button class="lightbox-prev" type="button" aria-label="前の画像">‹</button>
-  <img class="lightbox-image" src="" alt="" />
+  <img class="lightbox-image" alt="" hidden />
   {includeVideo && <video class="lightbox-video" muted loop playsinline hidden></video>}
   <button class="lightbox-next" type="button" aria-label="次の画像">›</button>
   <p id={statusId} class="lightbox-status" aria-live="polite"></p>
 </div>
 
 <script>
-  document.querySelectorAll<HTMLElement>('.lightbox[role="dialog"]').forEach((lightbox) => {
-    const closeButton = lightbox.querySelector<HTMLButtonElement>('.lightbox-close');
-    const status = lightbox.querySelector<HTMLElement>('.lightbox-status');
-    let isActive = false;
-    let returnFocus: HTMLElement | null = null;
-    let lastTrigger: HTMLElement | null = null;
-    let inactiveSiblings: Array<{ element: HTMLElement; wasInert: boolean }> = [];
-
-    const findTrigger = (target: EventTarget | null) =>
-      target instanceof Element
-        ? target.closest<HTMLElement>('[data-lightbox-trigger]')
-        : null;
-
-    const rememberTrigger = (event: Event) => {
-      const trigger = findTrigger(event.target);
-      if (trigger) lastTrigger = trigger;
-    };
-
-    document.addEventListener('pointerdown', rememberTrigger, true);
-    document.addEventListener('keydown', rememberTrigger, true);
-
-    const updateStatus = () => {
-      if (!status) return;
-      const visibleMedia = lightbox.querySelector<HTMLImageElement | HTMLVideoElement>(
-        '.lightbox-image:not([hidden]), .lightbox-video:not([hidden])'
-      );
-      status.textContent =
-        visibleMedia?.getAttribute('alt') ??
-        visibleMedia?.getAttribute('aria-label') ??
-        '拡大表示中';
-    };
-
-    const activate = () => {
-      if (isActive) return;
-      isActive = true;
-      returnFocus = lastTrigger ?? (
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null
-      );
-
-      inactiveSiblings = Array.from(lightbox.parentElement?.children ?? [])
-        .filter((element): element is HTMLElement =>
-          element instanceof HTMLElement && element !== lightbox
-        )
-        .map((element) => ({ element, wasInert: element.inert }));
-
-      inactiveSiblings.forEach(({ element }) => {
-        element.inert = true;
-      });
-
-      updateStatus();
-      closeButton?.focus();
-    };
-
-    const deactivate = () => {
-      if (!isActive) return;
-      isActive = false;
-      inactiveSiblings.forEach(({ element, wasInert }) => {
-        element.inert = wasInert;
-      });
-      inactiveSiblings = [];
-      returnFocus?.focus();
-      returnFocus = null;
-    };
-
-    new MutationObserver(() => {
-      if (lightbox.getAttribute('aria-hidden') === 'false') {
-        activate();
-      } else {
-        deactivate();
-      }
-    }).observe(lightbox, { attributes: true, attributeFilter: ['aria-hidden'] });
-
-    new MutationObserver(updateStatus).observe(lightbox, {
-      attributes: true,
-      subtree: true,
-      attributeFilter: ['src', 'alt', 'aria-label', 'hidden'],
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Tab' || lightbox.getAttribute('aria-hidden') !== 'false') {
-        return;
-      }
-
-      const controls = Array.from(
-        lightbox.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
-      ).filter((button) => !button.hidden);
-
-      if (controls.length === 0) return;
-
-      const first = controls[0];
-      const last = controls[controls.length - 1];
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    });
-  });
+  import { setupLightbox } from '../scripts/lightbox';
+  document.querySelectorAll<HTMLElement>('.lightbox[role="dialog"]').forEach(setupLightbox);
 </script>
 
 <style>

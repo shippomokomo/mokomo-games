@@ -83,3 +83,8 @@ export const shortLinks = {
 ## ダウンロードファイルを追加する
 
 ファイルを `public/downloads/` に保存し、`src/data/works.ts` の該当リンクを `/downloads/ファイル名` にします。
+
+## ブラウザー操作の自動テスト
+
+初回は `npx playwright install chromium` を実行し、`npm run test:e2e` で確認します。テスト用サーバーは自動起動します。
+ライトボックスの開閉・前後移動・フォーカス復帰、絞り込み後の列幅、モバイル表示を検証します。GitHub Pagesへの公開前にも自動実行されます。

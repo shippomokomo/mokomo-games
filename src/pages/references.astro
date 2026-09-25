@@ -24,14 +24,14 @@ const references = {
     {
       period: '2021 to September 2025',
       src: withBase('/images/references/reference-sheet_2021.webp'),
-    ...await getImageDimensions('/images/references/reference-sheet_2021.webp'),
+      ...await getImageDimensions('/images/references/reference-sheet_2021.webp'),
       alt: 'Mokomo Reference Sheet 2021 to September 2025',
       artist: artists.minmi,
     },
     {
       period: '2022 to September 2025',
       src: withBase('/images/references/reference-sheet_2022.webp'),
-    ...await getImageDimensions('/images/references/reference-sheet_2022.webp'),
+      ...await getImageDimensions('/images/references/reference-sheet_2022.webp'),
       alt: 'Mokomo Reference Sheet 2022 to September 2025',
       artist: artists.minmi,
     },
@@ -58,15 +58,24 @@ const references = {
 
       <div class="large-reference key-art">
         <div class="image-frame">
-          <img
-            class="reference-image"
+          <button
+            class="media-trigger"
+            type="button"
             data-lightbox-trigger
-            src={references.keyArt.src} width={references.keyArt.width} height={references.keyArt.height}
-            data-full={references.keyArt.src}
-            alt={references.keyArt.alt}
-            loading="lazy"
-            tabindex="0"
-          />
+            aria-controls="lightbox"
+            aria-haspopup="dialog"
+            aria-label={`${references.keyArt.alt}を拡大表示`}
+          >
+            <img
+              class="reference-image"
+              src={references.keyArt.src}
+              width={references.keyArt.width}
+              height={references.keyArt.height}
+              data-full={references.keyArt.src}
+              alt={references.keyArt.alt}
+              loading="lazy"
+            />
+          </button>
         </div>
 
         <div class="artist-info">
@@ -90,15 +99,24 @@ const references = {
 
         <div class="large-reference">
           <div class="image-frame">
-            <img
-              class="reference-image"
+            <button
+              class="media-trigger"
+              type="button"
               data-lightbox-trigger
-              src={references.current.src} width={references.current.width} height={references.current.height}
-              data-full={references.current.src}
-              alt={references.current.alt}
-              loading="lazy"
-              tabindex="0"
-            />
+              aria-controls="lightbox"
+              aria-haspopup="dialog"
+              aria-label={`${references.current.alt}を拡大表示`}
+            >
+              <img
+                class="reference-image"
+                src={references.current.src}
+                width={references.current.width}
+                height={references.current.height}
+                data-full={references.current.src}
+                alt={references.current.alt}
+                loading="lazy"
+              />
+            </button>
           </div>
 
           <div class="artist-info">
@@ -122,15 +140,24 @@ const references = {
             <h3>{reference.period}</h3>
 
             <div class="image-frame">
-              <img
-                class="reference-image"
+              <button
+                class="media-trigger"
+                type="button"
                 data-lightbox-trigger
-                src={reference.src} width={reference.width} height={reference.height}
-                data-full={reference.src}
-                alt={reference.alt}
-                loading="lazy"
-                tabindex="0"
-              />
+                aria-controls="lightbox"
+                aria-haspopup="dialog"
+                aria-label={`${reference.alt}を拡大表示`}
+              >
+                <img
+                  class="reference-image"
+                  src={reference.src}
+                  width={reference.width}
+                  height={reference.height}
+                  data-full={reference.src}
+                  alt={reference.alt}
+                  loading="lazy"
+                />
+              </button>
             </div>
 
             <div class="artist-info">
@@ -151,185 +178,7 @@ const references = {
 
   <MediaLightbox id="lightbox" />
 
-  <script>
-    const images = Array.from(
-      document.querySelectorAll<HTMLImageElement>(
-        '.reference-image'
-      )
-    );
 
-    const lightbox =
-      document.querySelector<HTMLElement>('#lightbox');
-
-    const lightboxImage =
-      document.querySelector<HTMLImageElement>(
-        '.lightbox-image'
-      );
-
-    const closeButton =
-      document.querySelector<HTMLButtonElement>(
-        '.lightbox-close'
-      );
-
-    const prevButton =
-      document.querySelector<HTMLButtonElement>(
-        '.lightbox-prev'
-      );
-
-    const nextButton =
-      document.querySelector<HTMLButtonElement>(
-        '.lightbox-next'
-      );
-
-    let currentIndex = 0;
-
-    function showImage(index: number) {
-      if (
-        !lightbox ||
-        !lightboxImage ||
-        images.length === 0
-      ) {
-        return;
-      }
-
-      if (index < 0) {
-        index = images.length - 1;
-      }
-
-      if (index >= images.length) {
-        index = 0;
-      }
-
-      currentIndex = index;
-
-      const image = images[currentIndex];
-      const fullSrc = image.getAttribute('data-full');
-
-      if (!fullSrc) return;
-
-      lightboxImage.setAttribute('src', fullSrc);
-
-      lightboxImage.setAttribute(
-        'alt',
-        image.getAttribute('alt') ?? ''
-      );
-
-      lightbox.classList.add('is-open');
-
-      lightbox.setAttribute(
-        'aria-hidden',
-        'false'
-      );
-
-      document.body.classList.add(
-        'lightbox-open'
-      );
-    }
-
-    function openImage(
-      image: HTMLImageElement
-    ) {
-      const index = images.indexOf(image);
-
-      if (index === -1) return;
-
-      showImage(index);
-    }
-
-    function closeLightbox() {
-      if (!lightbox || !lightboxImage) return;
-
-      lightbox.classList.remove('is-open');
-
-      lightbox.setAttribute(
-        'aria-hidden',
-        'true'
-      );
-
-      lightboxImage.setAttribute('src', '');
-      lightboxImage.setAttribute('alt', '');
-
-      document.body.classList.remove(
-        'lightbox-open'
-      );
-    }
-
-    function showPrevious() {
-      showImage(currentIndex - 1);
-    }
-
-    function showNext() {
-      showImage(currentIndex + 1);
-    }
-
-    images.forEach((image) => {
-      image.addEventListener('click', () => {
-        openImage(image);
-      });
-
-      image.addEventListener(
-        'keydown',
-        (event) => {
-          if (
-            event.key === 'Enter' ||
-            event.key === ' '
-          ) {
-            event.preventDefault();
-            openImage(image);
-          }
-        }
-      );
-    });
-
-    closeButton?.addEventListener(
-      'click',
-      closeLightbox
-    );
-
-    prevButton?.addEventListener(
-      'click',
-      showPrevious
-    );
-
-    nextButton?.addEventListener(
-      'click',
-      showNext
-    );
-
-    lightbox?.addEventListener(
-      'click',
-      (event) => {
-        if (event.target === lightbox) {
-          closeLightbox();
-        }
-      }
-    );
-
-    document.addEventListener(
-      'keydown',
-      (event) => {
-        if (
-          !lightbox?.classList.contains(
-            'is-open'
-          )
-        ) {
-          return;
-        }
-
-        if (event.key === 'Escape') {
-          closeLightbox();
-        }
-
-        if (event.key === 'ArrowLeft') {
-          showPrevious();
-        }
-
-        if (event.key === 'ArrowRight') {
-          showNext();
-        }
-      }
-    );
-  </script>
 </BaseLayout>
 
 <style>

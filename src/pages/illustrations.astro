@@ -1,6 +1,5 @@
 ---
-import { readFile } from 'node:fs/promises';
-import { imageMetadata } from 'astro/assets/utils';
+import { getImageDimensions } from '../utils/imageDimensions';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/illustrations.css';
 import MediaLightbox from '../components/MediaLightbox.astro';
@@ -9,8 +8,7 @@ import { getIllustrationMedia } from '../utils/media';
 // Read dimensions at build time; original media and browser lazy loading stay intact.
 const illustrations = await Promise.all(getIllustrationMedia().map(async (item) => {
   if (item.isVideo) return { ...item, width: undefined, height: undefined };
-  const path = 'public/images/illustrations/' + item.filename;
-  const { width, height } = await imageMetadata(await readFile(path), item.filename);
+  const { width, height } = await getImageDimensions('images/illustrations/' + item.filename);
   return { ...item, width, height };
 }));
 ---
@@ -130,16 +128,16 @@ const illustrations = await Promise.all(getIllustrationMedia().map(async (item) 
         data-artist={illustration.artistId}
         data-artist-name={illustration.artist?.name ?? illustration.artistId}
       >
-        <div class="illustration-media">
+        <button type="button" class="illustration-media media-trigger" data-lightbox-trigger aria-controls="lightbox" aria-haspopup="dialog" aria-label={`${illustration.artist?.name ?? illustration.artistId}さんの作品を拡大表示`}>
           {illustration.isVideo ? (
             <>
-              <video class="illustration-image illustration-video" data-lightbox-trigger data-full={illustration.url} preload="none" muted playsinline tabindex="0" aria-label={illustration.artist ? `${illustration.artist.name}さんの動画` : '動画'}></video>
+              <video class="illustration-image illustration-video" data-full={illustration.url} preload="none" muted playsinline aria-label={illustration.artist ? `${illustration.artist.name}さんの動画` : '動画'}></video>
               <span class="video-play" aria-hidden="true">▶</span>
             </>
           ) : (
-            <img width={illustration.width} height={illustration.height} class="illustration-image" data-lightbox-trigger src={illustration.url} data-full={illustration.url} alt={illustration.artist ? `${illustration.artist.name}さんのイラスト` : 'イラスト'} loading="lazy" tabindex="0" />
+            <img width={illustration.width} height={illustration.height} class="illustration-image" src={illustration.url} data-full={illustration.url} alt={illustration.artist ? `${illustration.artist.name}さんのイラスト` : 'イラスト'} loading="lazy" />
           )}
-        </div>
+        </button>
 
         <div class="illustration-info">
           {illustration.artist ? (
