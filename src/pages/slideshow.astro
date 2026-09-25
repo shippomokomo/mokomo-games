@@ -1,20 +1,10 @@
 ---
-import { readdirSync } from 'node:fs';
-import { withBase } from '../utils/paths';
-import { artists } from '../data/artists';
+import { getIllustrationMedia } from '../utils/media';
 
-const slideshowItems = readdirSync('public/images/illustrations')
-  .filter((filename) => filename.toLowerCase().endsWith('.webp'))
-  .sort((a, b) => a.localeCompare(b, 'en'))
-  .map((filename) => {
-    const artistId = filename.match(/^([a-z0-9]+)_/i)?.[1]?.toLowerCase() ?? '';
-    const artist = artists[artistId as keyof typeof artists];
-
-    return {
-      url: withBase(`/images/illustrations/${encodeURIComponent(filename)}`),
-      artistName: artist?.name ?? artistId,
-    };
-  });
+const slideshowItems = getIllustrationMedia({ webpOnly: true }).map((item) => ({
+  url: item.url,
+  artistName: item.artist?.name ?? item.artistId,
+}));
 ---
 
 <!doctype html>

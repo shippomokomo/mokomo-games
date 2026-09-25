@@ -1,0 +1,88 @@
+<div class="about-card">
+  <div class="about-introduction">
+    <p>
+      インディーゲー＆雑談好きの、パズル＆英語つよつよタヌキです！<br />
+      趣味でライブ配信をしています！
+    </p>
+
+    <p lang="en">
+      Mokomo, the most joyful and nerdy indie game streamer!
+    </p>
+  </div>
+
+  <dl class="about-details">
+    <div>
+      <dt>初配信</dt>
+      <dd><time datetime="2021-09-05">2021年9月5日</time></dd>
+    </div>
+    <div>
+      <dt>誕生日</dt>
+      <dd><time datetime="04-21">4月21日</time></dd>
+    </div>
+    <div>
+      <dt>ハッシュタグ</dt>
+      <dd>#ななもこ</dd>
+    </div>
+    <div>
+      <dt>イラストタグ</dt>
+      <dd>#ななもこアート</dd>
+    </div>
+  </dl>
+</div>
+
+<style>
+  .about-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .about-introduction {
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .about-introduction p {
+    margin: 0;
+  }
+
+  .about-introduction p + p {
+    margin-top: 0.75rem;
+  }
+
+  .about-introduction p[lang="en"] {
+    color: var(--color-text-soft);
+  }
+
+  .about-details {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+  }
+
+  .about-details div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .about-details dt {
+    color: var(--color-green-dark);
+    font-weight: 700;
+  }
+
+  .about-details dd {
+    margin: 0;
+  }
+
+  @media (max-width: 700px) {
+    .about-card {
+      grid-template-columns: 1fr;
+    }
+
+    .about-details div {
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+    }
+  }
+</style>

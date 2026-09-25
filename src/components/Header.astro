@@ -1,5 +1,6 @@
 ---
 import { withBase } from '../utils/paths';
+import { contactUrl } from '../data/links';
 
 const currentPath = Astro.url.pathname;
 
@@ -29,9 +30,6 @@ const navigation = [
     href: '/works/',
   },
 ];
-
-const contactUrl =
-  'https://docs.google.com/forms/d/e/1FAIpQLSfYv8hTEEF-RUeLCQTIECUldygrhvK21UBx7l3mQHLPyE2OyQ/viewform?usp=dialog';
 
 function isCurrentPage(href: string) {
   if (href === '/') {

@@ -1,53 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { withBase } from '../utils/paths';
-import { artists } from '../data/artists';
-import { readdirSync } from 'node:fs';
+import MediaLightbox from '../components/MediaLightbox.astro';
+import { getIllustrationMedia } from '../utils/media';
 
-const mediaFiles = readdirSync('public/images/illustrations').filter((filename) =>
-  /\.(webp|jpe?g|png|gif|avif|mp4)$/i.test(filename)
-);
-
-const illustrations = mediaFiles
-  .map((filename) => {
-
-    const match = filename.match(
-      /^([a-z0-9]+)_(\d{4})(\d{2})(\d{2})_(\d{2})_(fanart|commission)_(mokomo|mokoko|both)\.(webp|jpg|jpeg|png|gif|avif|mp4)$/i
-    );
-
-    if (!match) return null;
-
-    const [
-      ,
-      artistId,
-      year,
-      month,
-      day,
-      number,
-      type,
-      character,
-      extension,
-    ] = match;
-
-    const artist = artists[artistId as keyof typeof artists];
-
-    return {
-      filename,
-      url: withBase(`/images/illustrations/${encodeURIComponent(filename)}`),
-      artistId,
-      artist,
-      year: Number(year),
-      month: Number(month),
-      day: Number(day),
-      number: Number(number),
-      type: type.toLowerCase(),
-      character: character.toLowerCase(),
-      isVideo: extension.toLowerCase() === 'mp4',
-      dateValue: Number(`${year}${month}${day}${number}`),
-    };
-  })
-  .filter((item) => item !== null)
-  .sort((a, b) => b.dateValue - a.dateValue);
+const illustrations = getIllustrationMedia();
 ---
 
 <BaseLayout title="Illustrations | Mokomo Games">
@@ -202,43 +158,7 @@ const illustrations = mediaFiles
     ))}
   </div>
 
-  <div
-    id="lightbox"
-    class="lightbox"
-    aria-hidden="true"
-  >
-    <button
-      class="lightbox-close"
-      type="button"
-      aria-label="閉じる"
-    >
-      ×
-    </button>
-
-    <button
-      class="lightbox-prev"
-      type="button"
-      aria-label="前の画像"
-    >
-      ‹
-    </button>
-
-    <img
-      class="lightbox-image"
-      src=""
-      alt=""
-    />
-
-    <video class="lightbox-video" muted loop playsinline hidden></video>
-
-    <button
-      class="lightbox-next"
-      type="button"
-      aria-label="次の画像"
-    >
-      ›
-    </button>
-  </div>
+  <MediaLightbox id="lightbox" includeVideo />
 
   <script>
     const items = Array.from(
@@ -865,133 +785,6 @@ const illustrations = mediaFiles
     font-size: 0.85rem;
   }
 
-  /*
-   * Lightbox
-   *
-   * Home / References / Scheduleと同じデザイン
-   */
-  .lightbox {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 1000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(0, 0, 0, 0.88);
-
-    padding: 3rem 5rem;
-  }
-
-  .lightbox.is-open {
-    display: flex;
-  }
-
-  .lightbox-image,
-  .lightbox-video {
-    display: block;
-
-    max-width: 90vw;
-    max-height: 90vh;
-
-    width: auto;
-    height: auto;
-
-    object-fit: contain;
-  }
-
-  .lightbox-image[hidden],
-  .lightbox-video[hidden] { display: none; }
-
-  /*
-   * Lightboxボタン
-   */
-  .lightbox button {
-    position: fixed;
-
-    z-index: 1001;
-
-    border: 0;
-
-    background: transparent;
-    color: white;
-
-    cursor: pointer;
-
-    line-height: 1;
-
-    opacity: 0.8;
-
-    transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
-  }
-
-  .lightbox button:hover {
-    opacity: 1;
-  }
-
-  /*
-   * ×
-   */
-  .lightbox-close {
-    top: 1rem;
-    right: 1.5rem;
-
-    font-size: 3rem;
-  }
-
-  .lightbox-close:hover {
-    transform: scale(1.1);
-  }
-
-  /*
-   * 左矢印
-   */
-  .lightbox-prev {
-    left: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-prev:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  /*
-   * 右矢印
-   */
-  .lightbox-next {
-    right: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-next:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  /*
-   * Lightbox表示中は
-   * 背景ページをスクロールさせない
-   */
-  :global(body.lightbox-open) {
-    overflow: hidden;
-  }
 
   /*
    * スマートフォン
@@ -1028,37 +821,5 @@ const illustrations = mediaFiles
       border-radius: 8px;
     }
 
-    /*
-     * スマホのLightboxも
-     * 他ページと同じ
-     */
-    .lightbox {
-      padding: 3rem 2.5rem;
-    }
-
-    .lightbox-image,
-    .lightbox-video {
-      max-width: 94vw;
-      max-height: 88vh;
-    }
-
-    .lightbox-close {
-      top: 0.75rem;
-      right: 1rem;
-
-      font-size: 2.5rem;
-    }
-
-    .lightbox-prev {
-      left: 0.25rem;
-
-      font-size: 3.5rem;
-    }
-
-    .lightbox-next {
-      right: 0.25rem;
-
-      font-size: 3.5rem;
-    }
   }
 </style>

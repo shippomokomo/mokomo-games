@@ -1,45 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HomeAbout from '../components/home/HomeAbout.astro';
+import HomeGuidelines from '../components/home/HomeGuidelines.astro';
+import MediaLightbox from '../components/MediaLightbox.astro';
 import { withBase } from '../utils/paths';
+import { getScheduleImages } from '../utils/media';
+import { contactUrl } from '../data/links';
 
-/*
- * Scheduleページと同じルールで
- * public/images/schedule 内のWebP画像を取得
- */
-const scheduleModules = import.meta.glob(
-  '/public/images/schedule/*.webp',
-  {
-    eager: true,
-    query: '?url',
-    import: 'default',
-  }
-);
-
-/*
- * schedule_YYYYMMDD.webp から日付を取得し、
- * 新しい順に並べる
- */
-const schedules = Object.entries(scheduleModules)
-  .map(([path, url]) => {
-    const filename = path.split('/').pop() ?? '';
-
-    const match = filename.match(
-      /^schedule_(\d{4})(\d{2})(\d{2})\.webp$/
-    );
-
-    if (!match) return null;
-
-    const [, year, month, day] = match;
-
-    return {
-      filename,
-      url: withBase(`/images/schedule/${filename}`),
-      dateValue: Number(`${year}${month}${day}`),
-      dateLabel: `${year}-${month}-${day}`,
-    };
-  })
-  .filter((item) => item !== null)
-  .sort((a, b) => b.dateValue - a.dateValue);
+const schedules = getScheduleImages();
 
 /*
  * Homeには最新2件だけ表示
@@ -113,8 +81,6 @@ const links = [
   },
 ];
 
-const contactUrl =
-  'https://docs.google.com/forms/d/e/1FAIpQLSfYv8hTEEF-RUeLCQTIECUldygrhvK21UBx7l3mQHLPyE2OyQ/viewform?usp=dialog';
 ---
 
 <BaseLayout title="Mokomo Games">
@@ -169,38 +135,7 @@ const contactUrl =
     <!-- About -->
     <section class="home-section about-section">
       <h2>About</h2>
-
-      <div class="about-card">
-        <div class="about-introduction">
-          <p>
-            インディーゲー＆雑談好きの、パズル＆英語つよつよタヌキです！<br />
-            趣味でライブ配信をしています！
-          </p>
-
-          <p lang="en">
-            Mokomo, the most joyful and nerdy indie game streamer!
-          </p>
-        </div>
-
-        <dl class="about-details">
-          <div>
-            <dt>初配信</dt>
-            <dd><time datetime="2021-09-05">2021年9月5日</time></dd>
-          </div>
-          <div>
-            <dt>誕生日</dt>
-            <dd><time datetime="04-21">4月21日</time></dd>
-          </div>
-          <div>
-            <dt>ハッシュタグ</dt>
-            <dd>#ななもこ</dd>
-          </div>
-          <div>
-            <dt>イラストタグ</dt>
-            <dd>#ななもこアート</dd>
-          </div>
-        </dl>
-      </div>
+      <HomeAbout />
     </section>
 
     <!-- Latest Schedule -->
@@ -312,50 +247,7 @@ const contactUrl =
     <!-- Guidelines -->
     <section class="home-section guidelines-section">
       <h2>Guidelines</h2>
-
-      <div class="guidelines-card">
-        <p class="guidelines-introduction">
-          七宝もこも・もここのファンアートや二次創作を歓迎しています。制作・公開の際は、以下のガイドラインをご確認ください。
-        </p>
-
-        <section class="guideline-item">
-          <h3>Prohibited Uses</h3>
-          <p>以下の目的や内容での利用は禁止します。</p>
-          <ul>
-            <li>誹謗中傷、嫌がらせ、差別、第三者を傷つける目的での利用</li>
-            <li>政治的・宗教的な主張、宣伝、勧誘、活動への利用</li>
-            <li>R-18、R-18Gに該当する表現</li>
-            <li>七宝もこも本人や関係者、公式作品であると誤解させる表現</li>
-            <li>その他、七宝もこも・もここのイメージを著しく損なう利用</li>
-          </ul>
-        </section>
-
-        <section class="guideline-item">
-          <h3>Fan Art</h3>
-          <p>
-            ファンアートを公開する際は、イラストタグ「#ななもこアート」をご利用いただけます。
-          </p>
-          <p>
-            いただいたファンアートは、作者様のお名前やアカウントへのリンクとともに、当サイト、配信、SNS等で紹介させていただく場合があります。
-          </p>
-        </section>
-
-        <section class="guideline-item">
-          <h3>Generative AI and Machine Learning</h3>
-          <p>
-            七宝もこも・もここのキャラクターや設定を使用した、生成AIによる画像・動画等の作成および公開は禁止します。文章による指示だけで生成した場合も含みます。
-          </p>
-          <p>
-            また、当サイトに掲載されているイラストやキャラクター資料を、生成AIを含む機械学習の学習データとして利用することも原則として禁止します。
-          </p>
-          <p>
-            掲載作品について作者様が個別に方針を示している場合は、その方針にも従ってください。作者様の方針が確認できない場合や判断が難しい場合は、利用できません。
-          </p>
-          <p>
-            掲載作品を使用した追加学習、モデル・LoRA等の作成、画像生成サービスへの入力、画像から画像を生成する機能への入力、作風や絵柄の模倣を目的とした利用も禁止します。
-          </p>
-        </section>
-      </div>
+      <HomeGuidelines />
     </section>
 
     <!-- Contact -->
@@ -382,42 +274,7 @@ const contactUrl =
 
   </main>
 
-  <!-- Scheduleページと同じデザインのライトボックス -->
-  <div
-    id="schedule-lightbox"
-    class="lightbox"
-    aria-hidden="true"
-  >
-    <button
-      class="lightbox-close"
-      type="button"
-      aria-label="閉じる"
-    >
-      ×
-    </button>
-
-    <button
-      class="lightbox-prev"
-      type="button"
-      aria-label="前の画像"
-    >
-      ‹
-    </button>
-
-    <img
-      class="lightbox-image"
-      src=""
-      alt=""
-    />
-
-    <button
-      class="lightbox-next"
-      type="button"
-      aria-label="次の画像"
-    >
-      ›
-    </button>
-  </div>
+  <MediaLightbox id="schedule-lightbox" />
 </BaseLayout>
 
 <script>
@@ -729,54 +586,6 @@ const contactUrl =
   }
 
   /*
-   * About
-   */
-  .about-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
-    gap: 2rem;
-    align-items: start;
-  }
-
-  .about-introduction {
-    font-size: 1.05rem;
-    line-height: 1.9;
-  }
-
-  .about-introduction p {
-    margin: 0;
-  }
-
-  .about-introduction p + p {
-    margin-top: 0.75rem;
-  }
-
-  .about-introduction p[lang="en"] {
-    color: var(--color-text-soft);
-  }
-
-  .about-details {
-    display: grid;
-    gap: 0.8rem;
-    margin: 0;
-  }
-
-  .about-details div {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr);
-    gap: 1rem;
-  }
-
-  .about-details dt {
-    color: var(--color-green-dark);
-    font-weight: 700;
-  }
-
-  .about-details dd {
-    margin: 0;
-  }
-
-  /*
    * Latest Schedule
    */
   .schedule-grid {
@@ -913,43 +722,6 @@ const contactUrl =
   }
 
   /*
-   * Guidelines
-   */
-  .guidelines-introduction {
-    margin: 0;
-    line-height: 1.8;
-  }
-
-  .guideline-item {
-    margin-top: 2rem;
-  }
-
-  .guideline-item h3 {
-    margin: 0 0 0.8rem;
-    color: var(--color-green-dark);
-    font-size: 1.2rem;
-  }
-
-  .guideline-item p {
-    margin: 0;
-    line-height: 1.8;
-  }
-
-  .guideline-item p + p {
-    margin-top: 0.75rem;
-  }
-
-  .guideline-item ul {
-    margin: 0.75rem 0 0;
-    padding-left: 1.5rem;
-  }
-
-  .guideline-item li {
-    margin-top: 0.4rem;
-    line-height: 1.7;
-  }
-
-  /*
    * Contact
    */
   .contact-section p {
@@ -997,139 +769,6 @@ const contactUrl =
     transform: translateY(-1px);
   }
 
-  /*
-   * ライトボックス全体
-   *
-   * Scheduleページと同じデザイン
-   */
-  .lightbox {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 1000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    background:
-      rgba(0, 0, 0, 0.88);
-
-    padding: 3rem 5rem;
-  }
-
-  /*
-   * 開いている状態
-   */
-  .lightbox.is-open {
-    display: flex;
-  }
-
-  /*
-   * 拡大画像
-   */
-  .lightbox-image {
-    display: block;
-
-    max-width: 90vw;
-    max-height: 90vh;
-
-    width: auto;
-    height: auto;
-
-    object-fit: contain;
-  }
-
-  /*
-   * ライトボックスの共通ボタン
-   *
-   * Scheduleページと同じ
-   * 「背景なし＋白文字」
-   */
-  .lightbox button {
-    position: fixed;
-
-    z-index: 1001;
-
-    border: 0;
-
-    background: transparent;
-    color: white;
-
-    cursor: pointer;
-
-    line-height: 1;
-
-    opacity: 0.8;
-
-    transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
-  }
-
-  .lightbox button:hover {
-    opacity: 1;
-  }
-
-  /*
-   * ×
-   */
-  .lightbox-close {
-    top: 1rem;
-    right: 1.5rem;
-
-    font-size: 3rem;
-  }
-
-  .lightbox-close:hover {
-    transform: scale(1.1);
-  }
-
-  /*
-   * 左矢印
-   */
-  .lightbox-prev {
-    left: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-prev:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  /*
-   * 右矢印
-   */
-  .lightbox-next {
-    right: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-next:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  /*
-   * ライトボックス表示中は
-   * 背景ページをスクロールさせない
-   */
-  :global(body.lightbox-open) {
-    overflow: hidden;
-  }
 
   /*
    * スマートフォン
@@ -1170,16 +809,6 @@ const contactUrl =
       font-size: 1.7rem;
     }
 
-    .about-card {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .about-details div {
-      grid-template-columns: 6.5rem minmax(0, 1fr);
-      gap: 0.75rem;
-    }
-
     .schedule-grid,
     .card-grid {
       grid-template-columns: 1fr;
@@ -1189,36 +818,5 @@ const contactUrl =
       justify-content: flex-start;
     }
 
-    /*
-     * スマホのライトボックスも
-     * Scheduleページと同じ
-     */
-    .lightbox {
-      padding: 3rem 2.5rem;
-    }
-
-    .lightbox-image {
-      max-width: 94vw;
-      max-height: 88vh;
-    }
-
-    .lightbox-close {
-      top: 0.75rem;
-      right: 1rem;
-
-      font-size: 2.5rem;
-    }
-
-    .lightbox-prev {
-      left: 0.25rem;
-
-      font-size: 3.5rem;
-    }
-
-    .lightbox-next {
-      right: 0.25rem;
-
-      font-size: 3.5rem;
-    }
   }
 </style>

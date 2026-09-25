@@ -1,6 +1,7 @@
+import { contactUrl } from './links';
+
 export const shortLinks = {
-  contact:
-    'https://docs.google.com/forms/d/e/1FAIpQLSfYv8hTEEF-RUeLCQTIECUldygrhvK21UBx7l3mQHLPyE2OyQ/viewform?usp=header',
+  contact: contactUrl,
 } as const;
 
 export type ShortLinkName = keyof typeof shortLinks;

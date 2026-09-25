@@ -1,41 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { withBase } from '../utils/paths';
+import MediaLightbox from '../components/MediaLightbox.astro';
+import { getScheduleImages, type ScheduleImage } from '../utils/media';
 
-const modules = import.meta.glob('/public/images/schedule/*.webp', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
-
-const schedules = Object.entries(modules)
-  .map(([path, url]) => {
-    const filename = path.split('/').pop() ?? '';
-
-    const match = filename.match(
-      /^schedule_(\d{4})(\d{2})(\d{2})\.webp$/
-    );
-
-    if (!match) return null;
-
-    const [, year, month, day] = match;
-
-    return {
-      filename,
-      url: withBase(`/images/schedule/${filename}`),
-      year: Number(year),
-      month: Number(month),
-      day: Number(day),
-      dateValue: Number(`${year}${month}${day}`),
-      dateLabel: `${year}-${month}-${day}`,
-    };
-  })
-  .filter((item) => item !== null)
-  .sort((a, b) => b.dateValue - a.dateValue);
+const schedules = getScheduleImages();
 
 
 // 年ごとに分類
-const grouped = schedules.reduce((acc, schedule) => {
+const grouped = schedules.reduce<Record<number, ScheduleImage[]>>((acc, schedule) => {
   const year = schedule.year;
 
   if (!acc[year]) {
@@ -100,45 +72,7 @@ const latestYear = years[0];
   </div>
 
 
-  <!-- 拡大表示用ライトボックス -->
-
-  <div
-    id="lightbox"
-    class="lightbox"
-    aria-hidden="true"
-  >
-
-    <button
-      class="lightbox-close"
-      type="button"
-      aria-label="閉じる"
-    >
-      ×
-    </button>
-
-    <button
-      class="lightbox-prev"
-      type="button"
-      aria-label="前の画像"
-    >
-      ‹
-    </button>
-
-    <img
-      class="lightbox-image"
-      src=""
-      alt=""
-    />
-
-    <button
-      class="lightbox-next"
-      type="button"
-      aria-label="次の画像"
-    >
-      ›
-    </button>
-
-  </div>
+  <MediaLightbox id="lightbox" />
 
 
   <script>
@@ -526,135 +460,6 @@ const latestYear = years[0];
     opacity: 0.96;
   }
 
-  /*
-   * ライトボックス全体
-   */
-  .lightbox {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 1000;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    background:
-      rgba(0, 0, 0, 0.88);
-
-    padding: 3rem 5rem;
-  }
-
-  /*
-   * 開いている状態
-   */
-  .lightbox.is-open {
-    display: flex;
-  }
-
-  /*
-   * 拡大画像
-   */
-  .lightbox-image {
-    display: block;
-
-    max-width: 90vw;
-    max-height: 90vh;
-
-    width: auto;
-    height: auto;
-
-    object-fit: contain;
-  }
-
-  /*
-   * 共通ボタン
-   */
-  .lightbox button {
-    position: fixed;
-
-    z-index: 1001;
-
-    border: 0;
-
-    background: transparent;
-    color: white;
-
-    cursor: pointer;
-
-    line-height: 1;
-
-    opacity: 0.8;
-
-    transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
-  }
-
-  .lightbox button:hover {
-    opacity: 1;
-  }
-
-  /*
-   * ×
-   */
-  .lightbox-close {
-    top: 1rem;
-    right: 1.5rem;
-
-    font-size: 3rem;
-  }
-
-  .lightbox-close:hover {
-    transform: scale(1.1);
-  }
-
-  /*
-   * 左矢印
-   */
-  .lightbox-prev {
-    left: 1rem;
-    top: 50%;
-
-    transform: translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-prev:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  /*
-   * 右矢印
-   */
-  .lightbox-next {
-    right: 1rem;
-    top: 50%;
-
-    transform:
-      translateY(-50%);
-
-    font-size: 5rem;
-  }
-
-  .lightbox-next:hover {
-    transform:
-      translateY(-50%)
-      scale(1.1);
-  }
-
-  /*
-   * ライトボックス表示中は
-   * 背景ページをスクロールさせない
-   */
-  :global(body.lightbox-open) {
-    overflow: hidden;
-  }
 
   /*
    * スマートフォン
@@ -682,35 +487,5 @@ const latestYear = years[0];
       border-radius: 8px;
     }
 
-    /*
-     * スマホのライトボックス
-     */
-    .lightbox {
-      padding: 3rem 2.5rem;
-    }
-
-    .lightbox-image {
-      max-width: 94vw;
-      max-height: 88vh;
-    }
-
-    .lightbox-close {
-      top: 0.75rem;
-      right: 1rem;
-
-      font-size: 2.5rem;
-    }
-
-    .lightbox-prev {
-      left: 0.25rem;
-
-      font-size: 3.5rem;
-    }
-
-    .lightbox-next {
-      right: 0.25rem;
-
-      font-size: 3.5rem;
-    }
   }
 </style>
