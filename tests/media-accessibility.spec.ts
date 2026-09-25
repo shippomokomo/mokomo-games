@@ -9,12 +9,12 @@ for (const route of ['/', '/illustrations/', '/schedule/', '/references/']) {
     await first.focus();
     await page.keyboard.press('Space');
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.locator('header')).toHaveAttribute('inert', '');
+    await expect(page.locator('header.site-header')).toHaveAttribute('inert', '');
     await page.keyboard.press('Shift+Tab');
     await expect(page.locator('.lightbox-next')).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(first).toBeFocused();
-    await expect(page.locator('header')).not.toHaveAttribute('inert', '');
+    await expect(page.locator('header.site-header')).not.toHaveAttribute('inert', '');
   });
 }
 
