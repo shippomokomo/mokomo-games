@@ -21,6 +21,7 @@ const statusId = `${id}-status`;
   document.querySelectorAll<HTMLElement>('.lightbox[role="dialog"]').forEach((lightbox) => {
     const closeButton = lightbox.querySelector<HTMLButtonElement>('.lightbox-close');
     const status = lightbox.querySelector<HTMLElement>('.lightbox-status');
+    let isActive = false;
     let returnFocus: HTMLElement | null = null;
     let lastTrigger: HTMLElement | null = null;
     let inactiveSiblings: Array<{ element: HTMLElement; wasInert: boolean }> = [];
@@ -50,6 +51,8 @@ const statusId = `${id}-status`;
     };
 
     const activate = () => {
+      if (isActive) return;
+      isActive = true;
       returnFocus = lastTrigger ?? (
         document.activeElement instanceof HTMLElement
           ? document.activeElement
@@ -71,6 +74,8 @@ const statusId = `${id}-status`;
     };
 
     const deactivate = () => {
+      if (!isActive) return;
+      isActive = false;
       inactiveSiblings.forEach(({ element, wasInert }) => {
         element.inert = wasInert;
       });

@@ -1,10 +1,18 @@
 ---
+import { readFile } from 'node:fs/promises';
+import { imageMetadata } from 'astro/assets/utils';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/illustrations.css';
 import MediaLightbox from '../components/MediaLightbox.astro';
 import { getIllustrationMedia } from '../utils/media';
 
-const illustrations = getIllustrationMedia();
+// Read dimensions at build time; original media and browser lazy loading stay intact.
+const illustrations = await Promise.all(getIllustrationMedia().map(async (item) => {
+  if (item.isVideo) return { ...item, width: undefined, height: undefined };
+  const path = 'public/images/illustrations/' + item.filename;
+  const { width, height } = await imageMetadata(await readFile(path), item.filename);
+  return { ...item, width, height };
+}));
 ---
 
 <BaseLayout
@@ -22,6 +30,7 @@ const illustrations = getIllustrationMedia();
           type="button"
           class="filter-button is-active"
           data-filter-type="all"
+          aria-pressed="true"
         >
           All
         </button>
@@ -30,6 +39,7 @@ const illustrations = getIllustrationMedia();
           type="button"
           class="filter-button"
           data-filter-type="fanart"
+          aria-pressed="false"
         >
           Fanart
         </button>
@@ -38,6 +48,7 @@ const illustrations = getIllustrationMedia();
           type="button"
           class="filter-button"
           data-filter-type="commission"
+          aria-pressed="false"
         >
           Commission
         </button>
@@ -52,6 +63,7 @@ const illustrations = getIllustrationMedia();
           type="button"
           class="filter-button is-active"
           data-filter-character="all"
+          aria-pressed="true"
         >
           All
         </button>
@@ -60,6 +72,7 @@ const illustrations = getIllustrationMedia();
           type="button"
           class="filter-button"
           data-filter-character="mokomo"
+          aria-pressed="false"
         >
           Mokomo
         </button>
@@ -68,6 +81,7 @@ const illustrations = getIllustrationMedia();
           type="button"
           class="filter-button"
           data-filter-character="mokoko"
+          aria-pressed="false"
         >
           Mokoko
         </button>
@@ -123,7 +137,7 @@ const illustrations = getIllustrationMedia();
               <span class="video-play" aria-hidden="true">▶</span>
             </>
           ) : (
-            <img class="illustration-image" data-lightbox-trigger src={illustration.url} data-full={illustration.url} alt={illustration.artist ? `${illustration.artist.name}さんのイラスト` : 'イラスト'} loading="lazy" tabindex="0" />
+            <img width={illustration.width} height={illustration.height} class="illustration-image" data-lightbox-trigger src={illustration.url} data-full={illustration.url} alt={illustration.artist ? `${illustration.artist.name}さんのイラスト` : 'イラスト'} loading="lazy" tabindex="0" />
           )}
         </div>
 

@@ -220,9 +220,11 @@ const items = Array.from(
 
         typeButtons.forEach((otherButton) => {
           otherButton.classList.remove('is-active');
+          otherButton.setAttribute('aria-pressed', 'false');
         });
 
         button.classList.add('is-active');
+        button.setAttribute('aria-pressed', 'true');
 
         updateItems();
       });
@@ -235,9 +237,11 @@ const items = Array.from(
 
         characterButtons.forEach((otherButton) => {
           otherButton.classList.remove('is-active');
+          otherButton.setAttribute('aria-pressed', 'false');
         });
 
         button.classList.add('is-active');
+        button.setAttribute('aria-pressed', 'true');
 
         updateItems();
       });
