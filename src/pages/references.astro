@@ -1,4 +1,5 @@
 ---
+import { getImageDimensions } from '../utils/imageDimensions';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MediaLightbox from '../components/MediaLightbox.astro';
 import { withBase } from '../utils/paths';
@@ -7,12 +8,14 @@ import { artists } from '../data/artists';
 const references = {
   keyArt: {
     src: withBase('/images/references/key-art_2026.webp'),
+    ...await getImageDimensions('/images/references/key-art_2026.webp'),
     alt: 'Mokomo Key Art',
     artist: artists.kikuri,
   },
 
   current: {
     src: withBase('/images/references/reference-sheet_2025.webp'),
+    ...await getImageDimensions('/images/references/reference-sheet_2025.webp'),
     alt: 'Mokomo Reference Sheet September 2025 to Current',
     artist: artists.kikuri,
   },
@@ -21,12 +24,14 @@ const references = {
     {
       period: '2021 to September 2025',
       src: withBase('/images/references/reference-sheet_2021.webp'),
+    ...await getImageDimensions('/images/references/reference-sheet_2021.webp'),
       alt: 'Mokomo Reference Sheet 2021 to September 2025',
       artist: artists.minmi,
     },
     {
       period: '2022 to September 2025',
       src: withBase('/images/references/reference-sheet_2022.webp'),
+    ...await getImageDimensions('/images/references/reference-sheet_2022.webp'),
       alt: 'Mokomo Reference Sheet 2022 to September 2025',
       artist: artists.minmi,
     },
@@ -56,7 +61,7 @@ const references = {
           <img
             class="reference-image"
             data-lightbox-trigger
-            src={references.keyArt.src}
+            src={references.keyArt.src} width={references.keyArt.width} height={references.keyArt.height}
             data-full={references.keyArt.src}
             alt={references.keyArt.alt}
             loading="lazy"
@@ -88,7 +93,7 @@ const references = {
             <img
               class="reference-image"
               data-lightbox-trigger
-              src={references.current.src}
+              src={references.current.src} width={references.current.width} height={references.current.height}
               data-full={references.current.src}
               alt={references.current.alt}
               loading="lazy"
@@ -120,7 +125,7 @@ const references = {
               <img
                 class="reference-image"
                 data-lightbox-trigger
-                src={reference.src}
+                src={reference.src} width={reference.width} height={reference.height}
                 data-full={reference.src}
                 alt={reference.alt}
                 loading="lazy"

@@ -1,4 +1,5 @@
 ---
+import { getImageDimensions } from '../utils/imageDimensions';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/home.css';
 import HomeAbout from '../components/home/HomeAbout.astro';
@@ -13,7 +14,11 @@ const schedules = getScheduleImages();
 /*
  * Homeには最新2件だけ表示
  */
-const latestSchedules = schedules.slice(0, 2);
+const latestSchedules = await Promise.all(schedules.slice(0, 2).map(async (schedule) => ({
+  ...schedule,
+  ...await getImageDimensions('images/schedule/' + schedule.filename),
+})));
+const heroDimensions = await getImageDimensions('images/home/main-visual.webp');
 
 const contents = [
   {
@@ -95,6 +100,7 @@ const links = [
       <div class="hero-image">
         <img
           src={withBase('/images/home/main-visual.webp')}
+          {...heroDimensions}
           alt="七宝もこも / Shippo Mokomo"
           loading="eager"
           fetchpriority="high"
@@ -162,6 +168,8 @@ const links = [
                 >
                   <img
                     src={schedule.url}
+                    width={schedule.width}
+                    height={schedule.height}
                     alt={`${schedule.dateLabel} の配信スケジュール`}
                     loading="lazy"
                   />

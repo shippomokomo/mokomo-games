@@ -1,13 +1,17 @@
 ---
+import { getImageDimensions } from '../utils/imageDimensions';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MediaLightbox from '../components/MediaLightbox.astro';
-import { getScheduleImages, type ScheduleImage } from '../utils/media';
+import { getScheduleImages } from '../utils/media';
 
-const schedules = getScheduleImages();
+const schedules = await Promise.all(getScheduleImages().map(async (schedule) => ({
+  ...schedule,
+  ...await getImageDimensions('images/schedule/' + schedule.filename),
+})));
 
 
 // 年ごとに分類
-const grouped = schedules.reduce<Record<number, ScheduleImage[]>>((acc, schedule) => {
+const grouped = schedules.reduce<Record<number, (typeof schedules)[number][]>>((acc, schedule) => {
   const year = schedule.year;
 
   if (!acc[year]) {
@@ -54,6 +58,8 @@ const latestYear = years[0];
             <article class="schedule-item">
 
               <img
+                width={schedule.width}
+                height={schedule.height}
                 data-lightbox-trigger
                 src={year === latestYear ? schedule.url : undefined}
                 data-src={year === latestYear ? undefined : schedule.url}

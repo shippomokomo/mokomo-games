@@ -159,10 +159,11 @@
   /*
    * イラスト一覧
    */
+  /* Keep empty columns so filtering never stretches the remaining cards. */
   .illustration-grid {
     display: grid;
     grid-template-columns:
-      repeat(auto-fit, minmax(300px, 1fr));
+      repeat(auto-fill, minmax(300px, 1fr));
 
     gap: 1.75rem;
 
