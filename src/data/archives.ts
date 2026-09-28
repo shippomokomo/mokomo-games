@@ -288,6 +288,7 @@ export const games = [
 
   { title: 'Zenless Zone Zero', url: 'https://youtube.com/playlist?list=PLnacVyptWBIZMQOqxQv0HxiJl-CzQmWkU' },
 
+  { title: '20 Small Mazes', url: 'https://youtube.com/live/CzqI56MfKeA' },
   { title: '7 Days to End with You', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbr1vFjDiDS_fRBSI1NMEGD' },
   { title: '8番出口', url: 'https://www.youtube.com/watch?v=7YrG5cMW0JM' },
   { title: '8番のりば', url: 'https://www.youtube.com/live/su3NUomsFr0' },
