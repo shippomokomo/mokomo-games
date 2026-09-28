@@ -338,7 +338,7 @@ const sortedGames = [...games].sort((a, b) =>
     getSortTitle(b),
     ['ja', 'en'],
     {
-      numeric: true,
+      numeric: false,
       sensitivity: 'base',
     }
   )
