@@ -1,3 +1,4 @@
+import { scheduleFilenamePattern, illustrationFilenamePattern } from './mediaFilenames';
 import { readdirSync } from 'node:fs';
 import { artists } from '../data/artists';
 import { withBase } from './paths';
@@ -26,12 +27,6 @@ export interface IllustrationMedia {
   isVideo: boolean;
   dateValue: number;
 }
-
-const scheduleFilenamePattern =
-  /^schedule_(\d{4})(\d{2})(\d{2})\.webp$/;
-
-const illustrationFilenamePattern =
-  /^([a-z0-9]+)_(\d{4})(\d{2})(\d{2})_(\d{2})_(fanart|commission)_(mokomo|mokoko|both)\.(webp|jpg|jpeg|png|gif|avif|mp4)$/i;
 
 export function getScheduleImages(): ScheduleImage[] {
   return readdirSync('public/images/schedule')

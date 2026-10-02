@@ -1,3 +1,4 @@
+import { scheduleFilenamePattern, illustrationFilenamePattern } from '../src/utils/mediaFilenames.ts';
 import { readdirSync } from 'node:fs';
 import { artists } from '../src/data/artists.ts';
 import { resolve } from 'node:path';
@@ -8,10 +9,6 @@ const scheduleDirectory = resolve(root, 'public/images/schedule');
 const artistIds = new Set(Object.keys(artists));
 const usedArtistIds = new Set();
 const errors = [];
-
-const illustrationPattern =
-  /^([a-z0-9]+)_(\d{4})(\d{2})(\d{2})_(\d{2})_(fanart|commission)_(mokomo|mokoko|both)\.(webp|jpg|jpeg|png|gif|avif|mp4)$/;
-const schedulePattern = /^schedule_(\d{4})(\d{2})(\d{2})\.webp$/;
 
 function isRealDate(yearText, monthText, dayText) {
   const year = Number(yearText);
@@ -29,13 +26,14 @@ const illustrationFiles = readdirSync(illustrationDirectory, { withFileTypes: tr
   .map((entry) => entry.name);
 
 for (const filename of illustrationFiles) {
-  const match = filename.match(illustrationPattern);
+  const match = filename.match(illustrationFilenamePattern);
   if (!match) {
     errors.push(`Illustrations: ファイル名の形式が違います: ${filename}`);
     continue;
   }
 
-  const [, artistId, year, month, day] = match;
+  const [, rawArtistId, year, month, day] = match;
+  const artistId = rawArtistId.toLowerCase();
   usedArtistIds.add(artistId);
 
   if (!artistIds.has(artistId)) {
@@ -52,7 +50,7 @@ const scheduleFiles = readdirSync(scheduleDirectory, { withFileTypes: true })
   .map((entry) => entry.name);
 
 for (const filename of scheduleFiles) {
-  const match = filename.match(schedulePattern);
+  const match = filename.match(scheduleFilenamePattern);
   if (!match) {
     errors.push(`Schedule: ファイル名の形式が違います: ${filename}`);
     continue;

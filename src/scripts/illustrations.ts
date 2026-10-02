@@ -1,3 +1,5 @@
+import { normalizeSearchText } from '../utils/search';
+
 const items = Array.from(
       document.querySelectorAll<HTMLElement>('.illustration-item')
     );
@@ -43,21 +45,15 @@ const items = Array.from(
     let selectedArtist = 'all';
     let artistQuery = '';
 
-    // Compare search text without changing the displayed artist names.
-    function normalizeArtistName(value: string) {
-      return value
-        .normalize('NFKC')
-        .toLowerCase()
-        .replace(/[\u30a1-\u30f6]/g, character =>
-          String.fromCharCode(character.charCodeAt(0) - 0x60)
-        )
-        .trim();
-    }
+    const searchableItems = items.map(item => ({
+      item,
+      artistName: normalizeSearchText(item.dataset.artistName ?? ''),
+    }));
 
     function updateItems() {
       let visibleCount = 0;
 
-      items.forEach((item) => {
+      searchableItems.forEach(({ item, artistName }) => {
         const type = item.dataset.type;
         const character = item.dataset.character;
         const artist = item.dataset.artist;
@@ -76,8 +72,7 @@ const items = Array.from(
           artist === selectedArtist;
 
         const matchesArtistQuery =
-          normalizeArtistName(item.dataset.artistName ?? '')
-            .includes(artistQuery);
+          artistName.includes(artistQuery);
 
         const shouldShow =
           matchesType &&
@@ -138,7 +133,7 @@ const items = Array.from(
     });
 
     artistSearch?.addEventListener('input', () => {
-      artistQuery = normalizeArtistName(artistSearch.value);
+      artistQuery = normalizeSearchText(artistSearch.value);
       selectedArtist = 'all';
       if (artistFilter) artistFilter.hidden = true;
       updateItems();

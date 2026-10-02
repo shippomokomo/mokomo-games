@@ -159,6 +159,8 @@ import { allGroups, groups } from '../utils/archiveGroups';
   </div>
 
   <script>
+    import { normalizeSearchText } from '../utils/search';
+
     const searchInput =
       document.querySelector<HTMLInputElement>(
         '#game-search'
@@ -195,33 +197,21 @@ import { allGroups, groups } from '../utils/archiveGroups';
         '.search-result-count'
       );
 
-    function normalizeText(text: string) {
-      return text
-        .normalize('NFKC')
-        .toLowerCase()
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
+    const searchableGames = gameItems.map(item => ({
+      item,
+      title: normalizeSearchText(item.dataset.title ?? ''),
+      reading: normalizeSearchText(item.dataset.reading ?? ''),
+    }));
 
     function updateSearch() {
       if (!searchInput) return;
 
       const query =
-        normalizeText(searchInput.value);
+        normalizeSearchText(searchInput.value);
 
       let visibleCount = 0;
 
-      gameItems.forEach((item) => {
-        const title =
-          normalizeText(
-            item.dataset.title ?? ''
-          );
-
-        const reading =
-          normalizeText(
-            item.dataset.reading ?? ''
-          );
-
+      searchableGames.forEach(({ item, title, reading }) => {
         const shouldShow =
           query === '' ||
           title.includes(query) ||

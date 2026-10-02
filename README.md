@@ -38,6 +38,8 @@ npm run build
 
 例：`schedule_20260928.webp`
 
+大文字・小文字は区別しません。通常は例のように小文字で保存してください。
+
 ## イラストを追加する
 
 保存場所：`public/images/illustrations/`
@@ -50,6 +52,7 @@ npm run build
 - 種類：`fanart` または `commission`
 - キャラクター：`mokomo`、`mokoko`、`both`
 - 対応形式：WebP、JPG、PNG、GIF、AVIF、MP4
+- ファイル名の大文字・小文字は区別しません。通常は例のように小文字で保存してください
 - OBSスライドショーに表示されるのはWebPだけです
 
 新しい作者IDを使う場合は、先に `src/data/artists.ts` へ作者名とアカウントURLを追加します。

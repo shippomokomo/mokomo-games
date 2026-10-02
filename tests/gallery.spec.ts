@@ -1,3 +1,4 @@
+import { normalizeSearchText } from '../src/utils/search';
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
@@ -37,8 +38,8 @@ test('filtering retains column width, pressed state and visible-media navigation
     artist: (item as HTMLElement).dataset.artistName!,
     src: item.querySelector('img, video')!.getAttribute('data-full'),
   })));
-  const query = allMedia[0].artist.toLocaleLowerCase();
-  const expectedMedia = allMedia.filter(item => item.artist.toLocaleLowerCase().includes(query));
+  const query = normalizeSearchText(allMedia[0].artist);
+  const expectedMedia = allMedia.filter(item => normalizeSearchText(item.artist).includes(query));
   await page.locator('#artist-search').fill(query);
   await expect(cards).toHaveCount(expectedMedia.length);
   const after = await cards.first().boundingBox();

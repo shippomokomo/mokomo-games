@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { withBase } from '../../utils/paths';
 
 const tools = [
-  { id: 'clock', name: '時計', path: '/obs/clock.html', description: '配信画面に現在時刻を表示します。', detail: 'PCの時刻を24時間表記で表示し、10秒ごとに更新します。背景は透明です。' },
+  { id: 'clock', name: '時計', path: '/obs/clock.html', description: '配信画面に現在時刻を表示します。', detail: 'PCの時刻を24時間表記で表示し、1秒ごとに更新します。背景は透明です。' },
   { id: 'break', name: 'Break Time', path: '/obs/break.html', description: '休憩中のシーンに「Break Time」を表示します。', detail: '6秒周期でゆっくりフェードします。背景は透明です。' },
 ].map(tool => ({ ...tool, url: new URL(withBase(tool.path), Astro.site).href }));
 ---
