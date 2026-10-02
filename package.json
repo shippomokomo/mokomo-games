@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "validate:media": "node scripts/validate-media.mjs",
+    "validate:media": "node --experimental-strip-types scripts/validate-media.mjs",
     "prebuild": "npm run validate:media",
     "build": "astro build",
     "preview": "astro preview",

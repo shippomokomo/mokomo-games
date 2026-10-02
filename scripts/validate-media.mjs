@@ -1,14 +1,11 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
+import { artists } from '../src/data/artists.ts';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const illustrationDirectory = resolve(root, 'public/images/illustrations');
 const scheduleDirectory = resolve(root, 'public/images/schedule');
-const artistsSource = readFileSync(resolve(root, 'src/data/artists.ts'), 'utf8');
-
-const artistIds = new Set(
-  [...artistsSource.matchAll(/^\s{2}([a-z0-9]+):\s*\{/gm)].map((match) => match[1]),
-);
+const artistIds = new Set(Object.keys(artists));
 const usedArtistIds = new Set();
 const errors = [];
 
