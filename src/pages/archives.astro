@@ -77,7 +77,7 @@ import { allGroups, groups } from '../utils/archiveGroups';
         <div class="initial-index-links">
           {allGroups.map((group) => (
             group.games.length > 0 ? (
-              <a href={`#group-${group.name}`}>
+              <a href={`#group-${group.name}`} data-group-target={`group-${group.name}`}>
                 {group.name === 'その他' ? '他' : group.name}
               </a>
             ) : (
@@ -181,6 +181,10 @@ import { allGroups, groups } from '../utils/archiveGroups';
       )
     );
 
+    const initialLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('.initial-index-links a')
+    );
+
     const noResults =
       document.querySelector<HTMLElement>(
         '.no-results'
@@ -238,6 +242,21 @@ import { allGroups, groups } from '../utils/archiveGroups';
 
         group.hidden =
           visibleItems.length === 0;
+      });
+
+      initialLinks.forEach((link) => {
+        const group = document.getElementById(link.dataset.groupTarget ?? '');
+        const unavailable = !group || group.hidden;
+        link.classList.toggle('initial-index-unavailable', unavailable);
+        if (unavailable) {
+          link.removeAttribute('href');
+          link.setAttribute('aria-disabled', 'true');
+          link.setAttribute('tabindex', '-1');
+        } else {
+          link.setAttribute('href', `#${group.id}`);
+          link.removeAttribute('aria-disabled');
+          link.removeAttribute('tabindex');
+        }
       });
 
       if (clearButton) {
@@ -522,7 +541,7 @@ import { allGroups, groups } from '../utils/archiveGroups';
     cursor: default;
   }
 
-  .initial-index-links a:hover {
+  .initial-index-links a[href]:hover {
     border-color: var(--color-green);
 
     background: var(--color-green-soft);

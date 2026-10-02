@@ -84,41 +84,48 @@ const slideshowItems = getIllustrationMedia({ webpOnly: true }).map((item) => ({
         return item;
       }
 
-      function loadItem(slide, item) {
+      // Load off-screen so prefetching never changes a slide that is fading out.
+      function loadItem(item) {
         return new Promise((resolve) => {
-          const image = slide.querySelector('.slide-image');
-          const artistName = slide.querySelector('.artist-name');
-          if (!image || !artistName || !item) {
-            resolve(false);
-            return;
-          }
-
-          image.onload = () => resolve(true);
-          image.onerror = () => resolve(false);
-          artistName.textContent = item.artistName
-            ? `${item.artistName}さん`
-            : '';
+          if (!item) { resolve(null); return; }
+          const image = new Image();
+          image.className = 'slide-image';
+          image.alt = '';
+          const finish = (loaded) => {
+            window.clearTimeout(timeout);
+            image.onload = null;
+            image.onerror = null;
+            if (!loaded) image.removeAttribute('src');
+            resolve(loaded ? { image, item } : null);
+          };
+          const timeout = window.setTimeout(() => finish(false), 10000);
+          image.onload = () => finish(true);
+          image.onerror = () => finish(false);
           image.src = item.url;
         });
       }
 
+      let pendingItem;
       async function advance() {
-        const incomingIndex = activeSlide === 0 ? 1 : 0;
-        const incoming = slides[incomingIndex];
-        const outgoing = slides[activeSlide];
-        const item = nextItem();
-
-        if (!item || !incoming) return;
-
-        const loaded = await loadItem(incoming, item);
+        const loaded = await pendingItem;
         if (!loaded) {
-          window.setTimeout(advance, 100);
+          // Keep the current picture while skipping a failed or stalled request.
+          pendingItem = loadItem(nextItem());
+          window.setTimeout(advance, 1000);
           return;
         }
 
+        const incomingIndex = activeSlide === 0 ? 1 : 0;
+        const incoming = slides[incomingIndex];
+        const outgoing = slides[activeSlide];
+        incoming.querySelector('.slide-image').replaceWith(loaded.image);
+        incoming.querySelector('.artist-name').textContent = loaded.item.artistName
+          ? loaded.item.artistName + 'さん'
+          : '';
         incoming.classList.add('is-visible');
-        outgoing?.classList.remove('is-visible');
+        outgoing.classList.remove('is-visible');
         activeSlide = incomingIndex;
+        pendingItem = loadItem(nextItem());
         window.setTimeout(advance, duration);
       }
 
@@ -126,10 +133,10 @@ const slideshowItems = getIllustrationMedia({ webpOnly: true }).map((item) => ({
         slides.forEach((slide) => slide.remove());
         if (emptyMessage) emptyMessage.hidden = false;
       } else {
-        const firstItem = nextItem();
-        loadItem(slides[0], firstItem).then(() => {
-          window.setTimeout(advance, duration);
-        });
+        // The first image uses the same timeout and recovery as subsequent images.
+        activeSlide = 1;
+        pendingItem = loadItem(nextItem());
+        advance();
       }
     </script>
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "191d83a309c84785ab9c079042dda806"}'></script><!-- End Cloudflare Web Analytics -->

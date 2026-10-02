@@ -43,6 +43,17 @@ const items = Array.from(
     let selectedArtist = 'all';
     let artistQuery = '';
 
+    // Compare search text without changing the displayed artist names.
+    function normalizeArtistName(value: string) {
+      return value
+        .normalize('NFKC')
+        .toLowerCase()
+        .replace(/[\u30a1-\u30f6]/g, character =>
+          String.fromCharCode(character.charCodeAt(0) - 0x60)
+        )
+        .trim();
+    }
+
     function updateItems() {
       let visibleCount = 0;
 
@@ -65,8 +76,7 @@ const items = Array.from(
           artist === selectedArtist;
 
         const matchesArtistQuery =
-          (item.dataset.artistName ?? '')
-            .toLocaleLowerCase()
+          normalizeArtistName(item.dataset.artistName ?? '')
             .includes(artistQuery);
 
         const shouldShow =
@@ -128,7 +138,7 @@ const items = Array.from(
     });
 
     artistSearch?.addEventListener('input', () => {
-      artistQuery = artistSearch.value.trim().toLocaleLowerCase();
+      artistQuery = normalizeArtistName(artistSearch.value);
       selectedArtist = 'all';
       if (artistFilter) artistFilter.hidden = true;
       updateItems();

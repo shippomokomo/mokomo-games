@@ -33,15 +33,23 @@ test('filtering retains column width, pressed state and visible-media navigation
   await page.goto('/illustrations/');
   const cards = page.locator('.illustration-item:visible');
   const before = await cards.first().boundingBox();
-  await page.locator('#artist-search').fill('yama');
-  await expect(cards).toHaveCount(1);
+  const allMedia = await cards.evaluateAll(items => items.map(item => ({
+    artist: (item as HTMLElement).dataset.artistName!,
+    src: item.querySelector('img, video')!.getAttribute('data-full'),
+  })));
+  const query = allMedia[0].artist.toLocaleLowerCase();
+  const expectedMedia = allMedia.filter(item => item.artist.toLocaleLowerCase().includes(query));
+  await page.locator('#artist-search').fill(query);
+  await expect(cards).toHaveCount(expectedMedia.length);
   const after = await cards.first().boundingBox();
   expect(Math.abs(before!.width - after!.width)).toBeLessThan(1);
   await cards.first().locator('[data-lightbox-trigger]').click();
-  const image = page.locator('.lightbox-image');
-  const src = await image.getAttribute('src');
+  const activeMedia = page.locator('.lightbox-image:not([hidden]), .lightbox-video:not([hidden])');
+  await expect(activeMedia).toHaveAttribute('src', expectedMedia[0].src!);
   await page.keyboard.press('ArrowRight');
-  await expect(image).toHaveAttribute('src', src!);
+  await expect(activeMedia).toHaveAttribute('src', expectedMedia[1 % expectedMedia.length].src!);
+  await page.keyboard.press('ArrowLeft');
+  await expect(activeMedia).toHaveAttribute('src', expectedMedia[0].src!);
   await page.keyboard.press('Escape');
   await page.locator('#artist-search').fill('');
   await page.locator('[data-filter-type="commission"]').click();

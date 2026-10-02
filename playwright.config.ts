@@ -5,7 +5,7 @@ export default defineConfig({
   workers: 1,
   use: { baseURL: 'http://127.0.0.1:4322', viewport: { width: 1440, height: 900 } },
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 4322',
+    command: 'node scripts/test-server.mjs',
     url: 'http://127.0.0.1:4322',
     reuseExistingServer: !process.env.CI,
     timeout: 60000,
