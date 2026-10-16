@@ -294,11 +294,6 @@ export const artists = {
     url: 'https://x.com/CrowraulElf',
   },
 
-  rawl: {
-    name: '黒羽ラウル',
-    url: 'https://x.com/CrowraulElf',
-  },
-
   samaa: {
     name: '沙真愛',
     url: '',
