@@ -346,6 +346,6 @@ export const artists = {
 
   fukurou: {
     name: '天空梟',
-    url: 'https://x.com/Amazora_owl_02',
+    url: 'https://x.com/Amazora_owl_sub',
   },
 };
