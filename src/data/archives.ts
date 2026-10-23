@@ -256,6 +256,7 @@ export const games = [
   { title: 'Tiling Forest', url: 'https://www.youtube.com/live/ylb6WzYNFmo' },
   { title: 'TIMELIE', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbBh7tj5L2s49x2BLGm1nUk' },
   { title: 'TOEM', url: 'https://youtube.com/live/iZmbg-_uLCM' },
+  { title: 'TOEM 2', url: 'https://www.youtube.com/live/JzaOTlYt0t0' },
   { title: 'TO:NORTH', url: 'https://www.youtube.com/live/jEv-6Dwb_us' },
   { title: 'Tsuro', url: 'https://www.youtube.com/live/XyvChdrPFUg?feature=share' },
   { title: 'TUNIC', url: 'https://youtube.com/playlist?list=PLnacVyptWBIb63408NOp4sm8-P8S9W4t4' },
