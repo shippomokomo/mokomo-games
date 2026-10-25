@@ -227,6 +227,7 @@ export const games = [
   { title: 'RewindGirl', url: 'https://youtube.com/playlist?list=PLnacVyptWBIZkrXRVDTZxnxyP7DWr_1VY&si=B6xg9vqypnTWcogy' },
   { title: 'The Rise of the Golden Idol', url: 'https://youtube.com/playlist?list=PLnacVyptWBIYCcgnsbJTku9HTWN-d74fn&si=GdunZTcc1m5hyMjL' },
   { title: 'ROUTINE', url: 'https://youtube.com/live/MOptCd3Vquo' },
+  { title: 'RUBINITE', url: 'https://www.youtube.com/playlist?list=PLSmD29DP7k1Q' },
   { title: 'RV There Yet?', url: 'https://youtube.com/playlist?list=PLnacVyptWBIa4xWCpcZCSiftpRpXN-Mmw' },
 
   { title: 'Sable', url: 'https://youtube.com/playlist?list=PLnacVyptWBIaJbscsxcbIoYo92Z95Zq88' },
