@@ -232,7 +232,7 @@ export const games = [
 
   { title: 'Sable', url: 'https://youtube.com/playlist?list=PLnacVyptWBIaJbscsxcbIoYo92Z95Zq88' },
   { title: 'SANABI', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbFghPc8bjn3kTrX9fCNUcE&si=1XmY6RaDWNCMUiYM' },
-  { title: 'Sayonara Wild Hearts', reading: 'さよならわいるどはーつ', url: 'https://www.youtube.com/live/PeQtIKoIzUw' },
+  { title: 'Sayonara Wild Hearts', url: 'https://www.youtube.com/live/PeQtIKoIzUw' },
   { title: 'Shady Part of Me', url: 'https://youtube.com/playlist?list=PLnacVyptWBIYXMny1hfyRysJN4jB-AfH7' },
   { title: 'ShapeHero Factory', url: 'https://www.youtube.com/live/XPX7Su706tU' },
   { title: 'Sheepy: A Short Adventure', url: 'https://www.youtube.com/live/dtmqn-VCI2U' },
