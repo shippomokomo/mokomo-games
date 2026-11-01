@@ -232,6 +232,7 @@ export const games = [
 
   { title: 'Sable', url: 'https://youtube.com/playlist?list=PLnacVyptWBIaJbscsxcbIoYo92Z95Zq88' },
   { title: 'SANABI', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbFghPc8bjn3kTrX9fCNUcE&si=1XmY6RaDWNCMUiYM' },
+  { title: 'Sayonara Wild Hearts', reading: 'さよならわいるどはーつ', url: 'https://www.youtube.com/live/PeQtIKoIzUw' },
   { title: 'Shady Part of Me', url: 'https://youtube.com/playlist?list=PLnacVyptWBIYXMny1hfyRysJN4jB-AfH7' },
   { title: 'ShapeHero Factory', url: 'https://www.youtube.com/live/XPX7Su706tU' },
   { title: 'Sheepy: A Short Adventure', url: 'https://www.youtube.com/live/dtmqn-VCI2U' },
@@ -292,6 +293,7 @@ export const games = [
 
   { title: '20 More, Somehow Even Smaller, Mazes', url: 'https://youtube.com/live/CzqI56MfKeA' },
   { title: '20 Small Mazes', url: 'https://youtube.com/live/CzqI56MfKeA' },
+  { title: '60病 The 60-Second Syndrome', url: 'https://www.youtube.com/live/5D8jPEWr1Ig' },
   { title: '7 Days to End with You', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbr1vFjDiDS_fRBSI1NMEGD' },
   { title: '8番出口', url: 'https://www.youtube.com/watch?v=7YrG5cMW0JM' },
   { title: '8番のりば', url: 'https://www.youtube.com/live/su3NUomsFr0' },
