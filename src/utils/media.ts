@@ -1,5 +1,6 @@
 import { scheduleFilenamePattern, illustrationFilenamePattern } from './mediaFilenames';
-import { readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { readFileSync, readdirSync } from 'node:fs';
 import { artists } from '../data/artists';
 import { withBase } from './paths';
 
@@ -35,10 +36,14 @@ export function getScheduleImages(): ScheduleImage[] {
       if (!match) return null;
 
       const [, year, month, day] = match;
+      const cacheVersion = createHash('sha256')
+        .update(readFileSync(`public/images/schedule/${filename}`))
+        .digest('hex')
+        .slice(0, 12);
 
       return {
         filename,
-        url: withBase(`/images/schedule/${encodeURIComponent(filename)}`),
+        url: withBase(`/images/schedule/${encodeURIComponent(filename)}?v=${cacheVersion}`),
         year: Number(year),
         month: Number(month),
         day: Number(day),
