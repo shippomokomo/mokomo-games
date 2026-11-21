@@ -282,6 +282,7 @@ export const games = [
   { title: 'We Were Here Too', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbnpxj5bHm9bffkWdRjbNXj' },
   { title: 'We Were Here Together', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbnpxj5bHm9bffkWdRjbNXj' },
   { title: 'We Were Here Forever', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbnpxj5bHm9bffkWdRjbNXj' },
+  { title: 'Well Dweller', url: 'https://youtube.com/playlist?list=PLLvkRFFzmPGs' },
   { title: 'What Remains of Edith Finch', url: 'https://www.youtube.com/live/tVqQOzvGaI0?feature=share' },
   { title: 'Wildfrost', url: 'https://youtube.com/playlist?list=PLnacVyptWBIZWE3ifQvR4WrMajhH6k1QK&si=8jeTf032HaXxy5OK' },
   { title: 'Wingspan', url: 'https://youtube.com/playlist?list=PLnacVyptWBIbEpbK0fa9Z0obOCQcDrA4_' },
